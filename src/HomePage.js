@@ -1,8 +1,14 @@
+// src/HomePage.js
+
 import { useEffect, useMemo, useState } from "react";
 
 import NewsCard from "../components/NewsCard";
+import SeriesNav from "../components/SeriesNav";
 
-import { GROUPS, getBrand } from "../lib/brand";
+import {
+  GROUPS,
+  getBrand,
+} from "../lib/brand";
 
 export default function HomePage({
   theme,
@@ -64,6 +70,8 @@ export default function HomePage({
   ========================= */
   const fetchData = async () => {
     try {
+      setLoading(true);
+
       const res = await fetch(
         `/api/news?theme=${theme.id}`
       );
@@ -80,6 +88,8 @@ export default function HomePage({
           minute: "2-digit",
         })
       );
+    } catch (e) {
+      console.log(e);
     } finally {
       setLoading(false);
     }
@@ -159,6 +169,7 @@ export default function HomePage({
         item.link
       ).toLowerCase();
 
+      /* 検索 */
       if (
         keyword &&
         !text.includes(keyword.toLowerCase())
@@ -166,6 +177,7 @@ export default function HomePage({
         return false;
       }
 
+      /* ブランド */
       const brand = getBrand(item);
 
       if (activeGroups.length > 0) {
@@ -176,6 +188,7 @@ export default function HomePage({
         if (!ok) return false;
       }
 
+      /* 日付 */
       const diff =
         (new Date() -
           new Date(item.date)) /
@@ -183,6 +196,7 @@ export default function HomePage({
 
       if (diff > range) return false;
 
+      /* 未読 */
       if (
         unreadOnly &&
         readItems.includes(item.link)
@@ -201,6 +215,7 @@ export default function HomePage({
     readItems,
   ]);
 
+  /* 今日件数 */
   const todayCount = items.filter((item) => {
     const diff =
       (new Date() -
@@ -215,11 +230,24 @@ export default function HomePage({
       style={{
         ...styles.page,
         background:
-          theme.background,
+          theme.colors.background,
       }}
     >
       {/* 固定ヘッダー */}
-      <div style={styles.sticky}>
+      <div
+        style={{
+          ...styles.sticky,
+          background:
+            theme.colors.stickyBg,
+        }}
+      >
+        {/* シリーズナビ */}
+        <SeriesNav
+          currentTheme={theme.id}
+          primary={theme.colors.primary}
+        />
+
+        {/* タイトル */}
         <h1 style={styles.title}>
           {theme.title}
         </h1>
@@ -232,7 +260,7 @@ export default function HomePage({
             }
             style={tabBtn(
               tab === "all",
-              theme.primary
+              theme
             )}
           >
             新着
@@ -244,7 +272,7 @@ export default function HomePage({
             }
             style={tabBtn(
               tab === "fav",
-              theme.primary
+              theme
             )}
           >
             お気に入り(
@@ -262,7 +290,13 @@ export default function HomePage({
               )
             }
             placeholder="検索"
-            style={styles.search}
+            style={{
+              ...styles.search,
+              background:
+                theme.colors.inputBg,
+              color:
+                theme.colors.inputText,
+            }}
           />
 
           <select
@@ -274,7 +308,13 @@ export default function HomePage({
                 )
               )
             }
-            style={styles.select}
+            style={{
+              ...styles.select,
+              background:
+                theme.colors.inputBg,
+              color:
+                theme.colors.inputText,
+            }}
           >
             <option value={3}>
               3日
@@ -307,7 +347,7 @@ export default function HomePage({
                   activeGroups.includes(
                     g
                   ),
-                  theme.primary
+                  theme
                 )}
               >
                 {g}
@@ -326,7 +366,7 @@ export default function HomePage({
             }
             style={utilityBtn(
               unreadOnly,
-              theme.primary
+              theme
             )}
           >
             未読のみ
@@ -334,7 +374,11 @@ export default function HomePage({
 
           <button
             onClick={clearRead}
-            style={styles.resetBtn}
+            style={{
+              ...styles.resetBtn,
+              background:
+                theme.colors.readBadge,
+            }}
           >
             既読リセット
           </button>
@@ -382,9 +426,12 @@ export default function HomePage({
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                style={
-                  styles.skeleton
-                }
+                style={{
+                  ...styles.skeleton,
+                  background:
+                    theme.colors
+                      .skeleton,
+                }}
               />
             ))}
           </>
@@ -422,6 +469,7 @@ export default function HomePage({
                   markAsRead={
                     markAsRead
                   }
+                  theme={theme}
                 />
               )
             )}
@@ -463,9 +511,6 @@ const styles = {
 
     backdropFilter:
       "blur(10px)",
-
-    background:
-      "rgba(0,0,0,0.28)",
 
     flexShrink: 0,
   },
@@ -528,6 +573,8 @@ const styles = {
     border: "none",
 
     fontSize: 13,
+
+    outline: "none",
   },
 
   select: {
@@ -538,6 +585,8 @@ const styles = {
     border: "none",
 
     fontSize: 12,
+
+    outline: "none",
   },
 
   filterRow: {
@@ -594,8 +643,6 @@ const styles = {
 
     borderRadius: 10,
 
-    background: "#57606f",
-
     color: "#fff",
 
     padding: 8,
@@ -618,16 +665,13 @@ const styles = {
 
     borderRadius: 18,
 
-    background:
-      "#ffffff22",
-
     marginBottom: 10,
   },
 };
 
 const tabBtn = (
   active,
-  primary
+  theme
 ) => ({
   flex: 1,
 
@@ -642,13 +686,13 @@ const tabBtn = (
   fontSize: 12,
 
   background: active
-    ? primary
-    : "#2a2f36",
+    ? theme.colors.primary
+    : theme.colors.navInactive,
 });
 
 const filterBtn = (
   active,
-  primary
+  theme
 ) => ({
   flex: 1,
 
@@ -663,13 +707,13 @@ const filterBtn = (
   fontSize: 12,
 
   background: active
-    ? primary
-    : "#2a2f36",
+    ? theme.colors.primary
+    : theme.colors.navInactive,
 });
 
 const utilityBtn = (
   active,
-  primary
+  theme
 ) => ({
   flex: 1,
 
@@ -684,6 +728,6 @@ const utilityBtn = (
   fontSize: 12,
 
   background: active
-    ? primary
-    : "#2a2f36",
+    ? theme.colors.primary
+    : theme.colors.navInactive,
 });
