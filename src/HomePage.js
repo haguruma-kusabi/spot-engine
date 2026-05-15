@@ -2,14 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import Header from "../components/Header";
-import FilterBar from "../components/FilterBar";
-import NewsCard from "../components/NewsCard";
+import Layout from "./components/Layout";
+
+import Header from "./components/Header";
+import FilterBar from "./components/FilterBar";
+import NewsCard from "./components/NewsCard";
 
 import {
   GROUPS,
   getBrand,
-} from "../lib/brand";
+} from "./lib/brand";
 
 export default function HomePage({
   theme,
@@ -170,7 +172,6 @@ export default function HomePage({
         item.link
       ).toLowerCase();
 
-      /* 検索 */
       if (
         keyword &&
         !text.includes(keyword.toLowerCase())
@@ -178,7 +179,6 @@ export default function HomePage({
         return false;
       }
 
-      /* ブランド */
       const brand = getBrand(item);
 
       if (activeGroups.length > 0) {
@@ -189,7 +189,6 @@ export default function HomePage({
         if (!ok) return false;
       }
 
-      /* 日付 */
       const diff =
         (new Date() -
           new Date(item.date)) /
@@ -197,7 +196,6 @@ export default function HomePage({
 
       if (diff > range) return false;
 
-      /* 未読 */
       if (
         unreadOnly &&
         readItems.includes(item.link)
@@ -227,168 +225,108 @@ export default function HomePage({
   }).length;
 
   return (
-    <div
-      style={{
-        ...styles.page,
-        background:
-          theme.colors.background,
-      }}
+    <Layout
+      theme={theme}
+      header={
+        <>
+          <Header
+            theme={theme}
+            filteredCount={
+              filtered.length
+            }
+            todayCount={todayCount}
+            lastUpdated={
+              lastUpdated
+            }
+          />
+
+          <FilterBar
+            theme={theme}
+            tab={tab}
+            setTab={setTab}
+            favorites={favorites}
+            keyword={keyword}
+            setKeyword={
+              setKeyword
+            }
+            range={range}
+            setRange={setRange}
+            activeGroups={
+              activeGroups
+            }
+            toggleGroup={
+              toggleGroup
+            }
+            unreadOnly={
+              unreadOnly
+            }
+            setUnreadOnly={
+              setUnreadOnly
+            }
+            clearRead={clearRead}
+          />
+        </>
+      }
     >
-      {/* 固定ヘッダー */}
-      <div
-        style={{
-          ...styles.sticky,
-          background:
-            theme.colors.stickyBg,
-        }}
-      >
-        <Header
-          theme={theme}
-          filteredCount={
-            filtered.length
-          }
-          todayCount={todayCount}
-          lastUpdated={lastUpdated}
-        />
+      {/* ローディング */}
+      {loading && (
+        <>
+          <div
+            style={
+              styles.loadingText
+            }
+          >
+            読み込み中...
+          </div>
 
-        <FilterBar
-          theme={theme}
-          tab={tab}
-          setTab={setTab}
-          favorites={favorites}
-          keyword={keyword}
-          setKeyword={setKeyword}
-          range={range}
-          setRange={setRange}
-          activeGroups={
-            activeGroups
-          }
-          toggleGroup={
-            toggleGroup
-          }
-          unreadOnly={
-            unreadOnly
-          }
-          setUnreadOnly={
-            setUnreadOnly
-          }
-          clearRead={clearRead}
-        />
-      </div>
-
-      {/* コンテンツ */}
-      <div style={styles.contentArea}>
-        {/* ローディング */}
-        {loading && (
-          <>
+          {[1, 2, 3].map((i) => (
             <div
-              style={
-                styles.loadingText
-              }
-            >
-              読み込み中...
-            </div>
+              key={i}
+              style={{
+                ...styles.skeleton,
+                background:
+                  theme.colors
+                    .skeleton,
+              }}
+            />
+          ))}
+        </>
+      )}
 
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                style={{
-                  ...styles.skeleton,
-                  background:
-                    theme.colors
-                      .skeleton,
-                }}
-              />
-            ))}
-          </>
+      {/* 空状態 */}
+      {!loading &&
+        filtered.length === 0 && (
+          <div
+            style={styles.emptyBox}
+          >
+            条件に一致する記事がありません
+          </div>
         )}
 
-        {/* 空状態 */}
+      {/* カード */}
+      <div style={styles.grid}>
         {!loading &&
-          filtered.length === 0 && (
-            <div
-              style={styles.emptyBox}
-            >
-              条件に一致する記事がありません
-            </div>
-          )}
-
-        {/* カード */}
-        <div style={styles.grid}>
-          {!loading &&
-            filtered.map(
-              (item, i) => (
-                <NewsCard
-                  key={
-                    item.link || i
-                  }
-                  item={item}
-                  favorites={
-                    favorites
-                  }
-                  readItems={
-                    readItems
-                  }
-                  toggleFav={
-                    toggleFav
-                  }
-                  markAsRead={
-                    markAsRead
-                  }
-                  theme={theme}
-                />
-              )
-            )}
-        </div>
+          filtered.map((item, i) => (
+            <NewsCard
+              key={item.link || i}
+              item={item}
+              favorites={favorites}
+              readItems={readItems}
+              toggleFav={
+                toggleFav
+              }
+              markAsRead={
+                markAsRead
+              }
+              theme={theme}
+            />
+          ))}
       </div>
-    </div>
+    </Layout>
   );
 }
 
 const styles = {
-  page: {
-    height: "100vh",
-
-    overflow: "hidden",
-
-    display: "flex",
-
-    flexDirection: "column",
-
-    padding: "0 16px",
-
-    maxWidth: 520,
-
-    margin: "0 auto",
-
-    color: "#fff",
-  },
-
-  sticky: {
-    position: "sticky",
-
-    top: 0,
-
-    zIndex: 100,
-
-    paddingTop: 12,
-
-    paddingBottom: 14,
-
-    backdropFilter:
-      "blur(10px)",
-
-    flexShrink: 0,
-  },
-
-  contentArea: {
-    flex: 1,
-
-    overflow: "hidden",
-
-    paddingBottom: 140,
-  },
-
   grid: {
     display: "grid",
 
