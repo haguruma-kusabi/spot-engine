@@ -1,3 +1,5 @@
+// components/NewsCard.js
+
 import {
   getBrand,
   getBrandColor,
@@ -29,6 +31,7 @@ export default function NewsCard({
   readItems,
   toggleFav,
   markAsRead,
+  theme,
 }) {
   const brand = getBrand(item);
 
@@ -46,17 +49,30 @@ export default function NewsCard({
     3;
 
   return (
-    <div style={styles.card(isRead)}>
+    <div
+      style={styles.card(
+        isRead,
+        theme
+      )}
+    >
       {/* NEW */}
       {isNew && (
-        <div style={styles.newBadge}>
+        <div
+          style={styles.newBadge(
+            theme
+          )}
+        >
           NEW
         </div>
       )}
 
       {/* 既読 */}
       {isRead && (
-        <div style={styles.readBadge}>
+        <div
+          style={styles.readBadge(
+            theme
+          )}
+        >
           既読
         </div>
       )}
@@ -72,7 +88,7 @@ export default function NewsCard({
         {brand}
       </div>
 
-      {/* 画像エリア */}
+      {/* 画像 */}
       <a
         href={item.link}
         target="_blank"
@@ -99,14 +115,22 @@ export default function NewsCard({
         }
         style={styles.titleLink}
       >
-        <div style={styles.titleText}>
+        <div
+          style={styles.titleText(
+            theme
+          )}
+        >
           {item.title}
         </div>
       </a>
 
       {/* 下部 */}
       <div style={styles.bottomRow}>
-        <div style={styles.dateText}>
+        <div
+          style={styles.dateText(
+            theme
+          )}
+        >
           {new Date(
             item.date
           ).toLocaleDateString()}
@@ -124,10 +148,12 @@ export default function NewsCard({
 }
 
 const styles = {
-  card: (isRead) => ({
-    background: "#fff",
+  card: (isRead, theme) => ({
+    background:
+      theme.colors.card,
 
-    color: "#111",
+    color:
+      theme.colors.cardText,
 
     borderRadius: 18,
 
@@ -135,22 +161,23 @@ const styles = {
 
     position: "relative",
 
-    boxShadow:
-      "0 6px 16px rgba(0,0,0,0.18)",
+    boxShadow: theme.shadow,
 
     opacity: isRead ? 0.65 : 1,
   }),
 
-  newBadge: {
+  newBadge: (theme) => ({
     position: "absolute",
 
     top: 8,
 
     left: 8,
 
-    background: "#2ecc71",
+    background:
+      theme.colors.badge,
 
-    color: "#fff",
+    color:
+      theme.colors.badgeText,
 
     fontSize: 12,
 
@@ -161,16 +188,17 @@ const styles = {
     borderRadius: 9,
 
     zIndex: 2,
-  },
+  }),
 
-  readBadge: {
+  readBadge: (theme) => ({
     position: "absolute",
 
     top: 44,
 
     left: 8,
 
-    background: "#57606f",
+    background:
+      theme.colors.readBadge,
 
     color: "#fff",
 
@@ -183,7 +211,7 @@ const styles = {
     borderRadius: 8,
 
     zIndex: 2,
-  },
+  }),
 
   brandBadge: {
     position: "absolute",
@@ -223,11 +251,12 @@ const styles = {
 
   titleLink: {
     textDecoration: "none",
-
-    color: "#111",
   },
 
-  titleText: {
+  titleText: (theme) => ({
+    color:
+      theme.colors.cardText,
+
     fontSize: 14,
 
     fontWeight: "bold",
@@ -235,7 +264,7 @@ const styles = {
     lineHeight: 1.55,
 
     marginBottom: 10,
-  },
+  }),
 
   bottomRow: {
     display: "flex",
@@ -248,11 +277,12 @@ const styles = {
     marginTop: 2,
   },
 
-  dateText: {
+  dateText: (theme) => ({
     fontSize: 11,
 
-    color: "#666",
-  },
+    color:
+      theme.colors.mutedText,
+  }),
 
   favBtn: {
     border: "none",
