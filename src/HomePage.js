@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import Header from "../components/Header";
+import FilterBar from "../components/FilterBar";
 import NewsCard from "../components/NewsCard";
-import SeriesNav from "../components/SeriesNav";
 
 import {
   GROUPS,
@@ -241,173 +242,38 @@ export default function HomePage({
             theme.colors.stickyBg,
         }}
       >
-        {/* シリーズナビ */}
-        <SeriesNav
-          currentTheme={theme.id}
-          primary={theme.colors.primary}
+        <Header
+          theme={theme}
+          filteredCount={
+            filtered.length
+          }
+          todayCount={todayCount}
+          lastUpdated={lastUpdated}
         />
 
-        {/* タイトル */}
-        <h1 style={styles.title}>
-          {theme.title}
-        </h1>
-
-        {/* タブ */}
-        <div style={styles.tabRow}>
-          <button
-            onClick={() =>
-              setTab("all")
-            }
-            style={tabBtn(
-              tab === "all",
-              theme
-            )}
-          >
-            新着
-          </button>
-
-          <button
-            onClick={() =>
-              setTab("fav")
-            }
-            style={tabBtn(
-              tab === "fav",
-              theme
-            )}
-          >
-            お気に入り(
-            {favorites.length})
-          </button>
-        </div>
-
-        {/* 検索 */}
-        <div style={styles.searchRow}>
-          <input
-            value={keyword}
-            onChange={(e) =>
-              setKeyword(
-                e.target.value
-              )
-            }
-            placeholder="検索"
-            style={{
-              ...styles.search,
-              background:
-                theme.colors.inputBg,
-              color:
-                theme.colors.inputText,
-            }}
-          />
-
-          <select
-            value={range}
-            onChange={(e) =>
-              setRange(
-                Number(
-                  e.target.value
-                )
-              )
-            }
-            style={{
-              ...styles.select,
-              background:
-                theme.colors.inputBg,
-              color:
-                theme.colors.inputText,
-            }}
-          >
-            <option value={3}>
-              3日
-            </option>
-
-            <option value={7}>
-              7日
-            </option>
-
-            <option value={14}>
-              14日
-            </option>
-
-            <option value={30}>
-              30日
-            </option>
-          </select>
-        </div>
-
-        {/* フィルタ */}
-        <div style={styles.filterRow}>
-          {Object.keys(GROUPS).map(
-            (g) => (
-              <button
-                key={g}
-                onClick={() =>
-                  toggleGroup(g)
-                }
-                style={filterBtn(
-                  activeGroups.includes(
-                    g
-                  ),
-                  theme
-                )}
-              >
-                {g}
-              </button>
-            )
-          )}
-        </div>
-
-        {/* ユーティリティ */}
-        <div style={styles.utilityRow}>
-          <button
-            onClick={() =>
-              setUnreadOnly(
-                !unreadOnly
-              )
-            }
-            style={utilityBtn(
-              unreadOnly,
-              theme
-            )}
-          >
-            未読のみ
-          </button>
-
-          <button
-            onClick={clearRead}
-            style={{
-              ...styles.resetBtn,
-              background:
-                theme.colors.readBadge,
-            }}
-          >
-            既読リセット
-          </button>
-        </div>
-
-        {/* 情報 */}
-        {!loading && (
-          <>
-            <div style={styles.infoRow}>
-              <span>
-                {filtered.length}
-                件ヒット
-              </span>
-
-              <span>
-                今日 {todayCount}件
-              </span>
-            </div>
-
-            <div
-              style={
-                styles.updateText
-              }
-            >
-              最終更新{" "}
-              {lastUpdated}
-            </div>
-          </>
-        )}
+        <FilterBar
+          theme={theme}
+          tab={tab}
+          setTab={setTab}
+          favorites={favorites}
+          keyword={keyword}
+          setKeyword={setKeyword}
+          range={range}
+          setRange={setRange}
+          activeGroups={
+            activeGroups
+          }
+          toggleGroup={
+            toggleGroup
+          }
+          unreadOnly={
+            unreadOnly
+          }
+          setUnreadOnly={
+            setUnreadOnly
+          }
+          clearRead={clearRead}
+        />
       </div>
 
       {/* コンテンツ */}
@@ -537,95 +403,6 @@ const styles = {
     msOverflowStyle: "none",
   },
 
-  title: {
-    textAlign: "center",
-
-    fontSize: 22,
-
-    marginBottom: 14,
-
-    fontWeight: "bold",
-  },
-
-  tabRow: {
-    display: "flex",
-
-    gap: 6,
-
-    marginBottom: 10,
-  },
-
-  searchRow: {
-    display: "flex",
-
-    gap: 6,
-
-    marginBottom: 10,
-  },
-
-  search: {
-    flex: 2,
-
-    padding: 9,
-
-    borderRadius: 10,
-
-    border: "none",
-
-    fontSize: 13,
-
-    outline: "none",
-  },
-
-  select: {
-    flex: 1,
-
-    borderRadius: 10,
-
-    border: "none",
-
-    fontSize: 12,
-
-    outline: "none",
-  },
-
-  filterRow: {
-    display: "flex",
-
-    gap: 6,
-
-    marginBottom: 10,
-  },
-
-  utilityRow: {
-    display: "flex",
-
-    gap: 6,
-
-    marginBottom: 10,
-  },
-
-  infoRow: {
-    display: "flex",
-
-    justifyContent:
-      "space-between",
-
-    fontSize: 12,
-
-    color: "#d7e0e5",
-
-    marginBottom: 4,
-  },
-
-  updateText: {
-    fontSize: 11,
-
-    color: "#cfe7d3",
-
-    marginBottom: 6,
-  },
-
   loadingText: {
     textAlign: "center",
 
@@ -634,20 +411,6 @@ const styles = {
     marginTop: 24,
 
     marginBottom: 14,
-  },
-
-  resetBtn: {
-    flex: 1,
-
-    border: "none",
-
-    borderRadius: 10,
-
-    color: "#fff",
-
-    padding: 8,
-
-    fontSize: 12,
   },
 
   emptyBox: {
@@ -668,66 +431,3 @@ const styles = {
     marginBottom: 10,
   },
 };
-
-const tabBtn = (
-  active,
-  theme
-) => ({
-  flex: 1,
-
-  padding: 9,
-
-  borderRadius: 10,
-
-  border: "none",
-
-  color: "#fff",
-
-  fontSize: 12,
-
-  background: active
-    ? theme.colors.primary
-    : theme.colors.navInactive,
-});
-
-const filterBtn = (
-  active,
-  theme
-) => ({
-  flex: 1,
-
-  padding: 8,
-
-  borderRadius: 10,
-
-  border: "none",
-
-  color: "#fff",
-
-  fontSize: 12,
-
-  background: active
-    ? theme.colors.primary
-    : theme.colors.navInactive,
-});
-
-const utilityBtn = (
-  active,
-  theme
-) => ({
-  flex: 1,
-
-  padding: 8,
-
-  borderRadius: 10,
-
-  border: "none",
-
-  color: "#fff",
-
-  fontSize: 12,
-
-  background: active
-    ? theme.colors.primary
-    : theme.colors.navInactive,
-});
