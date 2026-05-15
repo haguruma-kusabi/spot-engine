@@ -1,7 +1,7 @@
-import HomePage from "../src/HomePage";
+import HomePage from "../HomePage";
 
 import { theme } from "../themes/matcha";
 
-export default function Page() {
+export default function MatchaPage() {
   return <HomePage theme={theme} />;
 }
