@@ -1,62 +1,85 @@
-export const BRANDS = {
-  convenience: {
-    セブン: [
-      "セブン",
-      "セブンイレブン",
-      "7-Eleven",
-      "7 eleven",
-    ],
-
-    ファミマ: [
-      "ファミマ",
-      "ファミリーマート",
-      "FamilyMart",
-    ],
-
-    ローソン: [
-      "ローソン",
-      "LAWSON",
-    ],
-  },
-
-  cafe: {
-    スタバ: [
-      "スタバ",
-      "スターバックス",
-      "Starbucks",
-    ],
-
-    タリーズ: [
-      "タリーズ",
-      "TULLY",
-      "Tully's",
-    ],
-
-    ドトール: [
-      "ドトール",
-      "DOUTOR",
-    ],
-  },
-};
-
 export function detectBrand(title = "") {
   const text = title.toLowerCase();
 
-  for (const [group, brands] of Object.entries(BRANDS)) {
-    for (const [name, keywords] of Object.entries(brands)) {
-      for (const keyword of keywords) {
-        if (text.includes(keyword.toLowerCase())) {
-          return {
-            group,
-            name,
-          };
-        }
-      }
-    }
+  // ===== コンビニ =====
+  if (
+    text.includes("セブン") ||
+    text.includes("セブンイレブン") ||
+    text.includes("7-11") ||
+    text.includes("7-eleven") ||
+    text.includes("711")
+  ) {
+    return {
+      group: "convenience",
+      name: "セブン",
+    };
   }
 
+  if (
+    text.includes("ファミマ") ||
+    text.includes("ファミリーマート") ||
+    text.includes("familymart") ||
+    text.includes("family mart")
+  ) {
+    return {
+      group: "convenience",
+      name: "ファミマ",
+    };
+  }
+
+  if (
+    text.includes("ローソン") ||
+    text.includes("lawson")
+  ) {
+    return {
+      group: "convenience",
+      name: "ローソン",
+    };
+  }
+
+  // ===== カフェ =====
+  if (
+    text.includes("スタバ") ||
+    text.includes("スターバックス") ||
+    text.includes("starbucks")
+  ) {
+    return {
+      group: "cafe",
+      name: "スタバ",
+    };
+  }
+
+  if (
+    text.includes("タリーズ") ||
+    text.includes("tullys") ||
+    text.includes("tully's")
+  ) {
+    return {
+      group: "cafe",
+      name: "タリーズ",
+    };
+  }
+
+  if (
+    text.includes("ドトール") ||
+    text.includes("doutor")
+  ) {
+    return {
+      group: "cafe",
+      name: "ドトール",
+    };
+  }
+
+  // ===== その他 =====
   return {
     group: "other",
-    name: null,
+    name: "その他",
   };
+}
+
+/**
+ * 拡張用（将来：複数ブランド同時検出）
+ */
+export function detectBrands(title = "") {
+  return [detectBrand(title)];
 }
