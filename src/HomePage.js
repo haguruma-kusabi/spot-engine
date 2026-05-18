@@ -11,6 +11,7 @@ export default function HomePage({ theme }) {
   const [loading, setLoading] = useState(true);
 
   const [tab, setTab] = useState("all");
+
   const [range, setRange] = useState(7);
 
   const [keyword, setKeyword] = useState("");
@@ -23,6 +24,7 @@ export default function HomePage({ theme }) {
   const [selectedBrands, setSelectedBrands] = useState({
     convenience: [],
     cafe: [],
+    other: false,
   });
 
   useEffect(() => {
@@ -110,24 +112,30 @@ export default function HomePage({ theme }) {
       );
     }
 
-    // brand filter（OR）
+    // brand filter（OR + other対応）
     const hasBrandFilter =
       selectedBrands.convenience.length > 0 ||
-      selectedBrands.cafe.length > 0;
+      selectedBrands.cafe.length > 0 ||
+      selectedBrands.other;
 
     if (hasBrandFilter) {
       list = list.filter((item) => {
-        const brand = item.brand;
+        const b = item.brand;
 
-        const matchConvenience =
+        // other
+        if (selectedBrands.other && b.group === "other") {
+          return true;
+        }
+
+        const matchConv =
           selectedBrands.convenience.length === 0 ||
-          selectedBrands.convenience.includes(brand.name);
+          selectedBrands.convenience.includes(b.name);
 
         const matchCafe =
           selectedBrands.cafe.length === 0 ||
-          selectedBrands.cafe.includes(brand.name);
+          selectedBrands.cafe.includes(b.name);
 
-        return matchConvenience || matchCafe;
+        return matchConv || matchCafe;
       });
     }
 
@@ -174,6 +182,7 @@ export default function HomePage({ theme }) {
         color: "#fff",
       }}
     >
+      {/* ヘッダー */}
       <div
         style={{
           position: "sticky",
@@ -201,6 +210,7 @@ export default function HomePage({ theme }) {
         />
       </div>
 
+      {/* コンテンツ */}
       {loading ? (
         <div style={{ padding: 24 }}>読み込み中...</div>
       ) : (
