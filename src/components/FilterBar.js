@@ -20,21 +20,14 @@ export default function FilterBar({
 
   theme,
 }) {
-  function toggleBrand(group, value) {
+  function toggle(group, value) {
     setSelectedBrands((prev) => {
       const next = { ...prev };
 
       const current = next[group] || [];
 
-      if (value === "all") {
-        next[group] = [];
-        return next;
-      }
-
-      const exists = current.includes(value);
-
-      if (exists) {
-        next[group] = current.filter((b) => b !== value);
+      if (current.includes(value)) {
+        next[group] = current.filter((v) => v !== value);
       } else {
         next[group] = [...current, value];
       }
@@ -78,36 +71,53 @@ export default function FilterBar({
 
       {/* コンビニ */}
       <div style={styles.group}>
-        <div style={styles.groupTitle}>コンビニ</div>
+        <div style={styles.title}>コンビニ</div>
 
-        <select
-          onChange={(e) =>
-            toggleBrand("convenience", e.target.value)
-          }
-          style={styles.select}
-        >
-          <option value="all">全て</option>
-          <option value="セブン">セブン</option>
-          <option value="ファミマ">ファミマ</option>
-          <option value="ローソン">ローソン</option>
-        </select>
+        {["セブン", "ファミマ", "ローソン"].map((b) => (
+          <label key={b} style={styles.checkRow}>
+            <input
+              type="checkbox"
+              checked={selectedBrands.convenience.includes(b)}
+              onChange={() => toggle("convenience", b)}
+            />
+            <span>{b}</span>
+          </label>
+        ))}
       </div>
 
       {/* カフェ */}
       <div style={styles.group}>
-        <div style={styles.groupTitle}>カフェ</div>
+        <div style={styles.title}>カフェ</div>
 
-        <select
-          onChange={(e) =>
-            toggleBrand("cafe", e.target.value)
-          }
-          style={styles.select}
-        >
-          <option value="all">全て</option>
-          <option value="スタバ">スタバ</option>
-          <option value="タリーズ">タリーズ</option>
-          <option value="ドトール">ドトール</option>
-        </select>
+        {["スタバ", "タリーズ", "ドトール"].map((b) => (
+          <label key={b} style={styles.checkRow}>
+            <input
+              type="checkbox"
+              checked={selectedBrands.cafe.includes(b)}
+              onChange={() => toggle("cafe", b)}
+            />
+            <span>{b}</span>
+          </label>
+        ))}
+      </div>
+
+      {/* その他 */}
+      <div style={styles.group}>
+        <div style={styles.title}>その他</div>
+
+        <label style={styles.checkRow}>
+          <input
+            type="checkbox"
+            checked={selectedBrands.other}
+            onChange={() =>
+              setSelectedBrands((prev) => ({
+                ...prev,
+                other: !prev.other,
+              }))
+            }
+          />
+          <span>その他</span>
+        </label>
       </div>
 
       {/* 期間 */}
@@ -128,7 +138,7 @@ export default function FilterBar({
         </select>
       </div>
 
-      {/* 未読 / リセット */}
+      {/* 未読 */}
       <div style={styles.row}>
         <button
           onClick={() => setShowUnreadOnly(!showUnreadOnly)}
@@ -154,9 +164,7 @@ export default function FilterBar({
 }
 
 const styles = {
-  wrap: {
-    padding: "0 14px 12px",
-  },
+  wrap: { padding: "0 14px 12px" },
 
   row: {
     display: "flex",
@@ -165,13 +173,21 @@ const styles = {
   },
 
   group: {
-    marginBottom: 10,
+    marginBottom: 12,
   },
 
-  groupTitle: {
+  title: {
     fontSize: 12,
-    marginBottom: 4,
+    marginBottom: 6,
     opacity: 0.8,
+  },
+
+  checkRow: {
+    display: "flex",
+    gap: 8,
+    alignItems: "center",
+    fontSize: 13,
+    marginBottom: 4,
   },
 
   search: {
