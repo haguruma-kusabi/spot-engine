@@ -23,13 +23,12 @@ export default function FilterBar({
   function toggle(group, value) {
     setSelectedBrands((prev) => {
       const next = { ...prev };
+      const list = next[group] || [];
 
-      const current = next[group] || [];
-
-      if (current.includes(value)) {
-        next[group] = current.filter((v) => v !== value);
+      if (list.includes(value)) {
+        next[group] = list.filter((v) => v !== value);
       } else {
-        next[group] = [...current, value];
+        next[group] = [...list, value];
       }
 
       return next;
@@ -69,42 +68,43 @@ export default function FilterBar({
         />
       </div>
 
-      {/* コンビニ */}
-      <div style={styles.group}>
-        <div style={styles.title}>コンビニ</div>
+      {/* 横並びエリア */}
+      <div style={styles.grid2}>
+        {/* コンビニ */}
+        <div style={styles.group}>
+          <div style={styles.title}>コンビニ</div>
 
-        {["セブン", "ファミマ", "ローソン"].map((b) => (
-          <label key={b} style={styles.checkRow}>
-            <input
-              type="checkbox"
-              checked={selectedBrands.convenience.includes(b)}
-              onChange={() => toggle("convenience", b)}
-            />
-            <span>{b}</span>
-          </label>
-        ))}
-      </div>
+          {["セブン", "ファミマ", "ローソン"].map((b) => (
+            <label key={b} style={styles.checkRow}>
+              <input
+                type="checkbox"
+                checked={selectedBrands.convenience.includes(b)}
+                onChange={() => toggle("convenience", b)}
+              />
+              <span>{b}</span>
+            </label>
+          ))}
+        </div>
 
-      {/* カフェ */}
-      <div style={styles.group}>
-        <div style={styles.title}>カフェ</div>
+        {/* カフェ */}
+        <div style={styles.group}>
+          <div style={styles.title}>カフェ</div>
 
-        {["スタバ", "タリーズ", "ドトール"].map((b) => (
-          <label key={b} style={styles.checkRow}>
-            <input
-              type="checkbox"
-              checked={selectedBrands.cafe.includes(b)}
-              onChange={() => toggle("cafe", b)}
-            />
-            <span>{b}</span>
-          </label>
-        ))}
+          {["スタバ", "タリーズ", "ドトール"].map((b) => (
+            <label key={b} style={styles.checkRow}>
+              <input
+                type="checkbox"
+                checked={selectedBrands.cafe.includes(b)}
+                onChange={() => toggle("cafe", b)}
+              />
+              <span>{b}</span>
+            </label>
+          ))}
+        </div>
       </div>
 
       {/* その他 */}
       <div style={styles.group}>
-        <div style={styles.title}>その他</div>
-
         <label style={styles.checkRow}>
           <input
             type="checkbox"
@@ -164,7 +164,9 @@ export default function FilterBar({
 }
 
 const styles = {
-  wrap: { padding: "0 14px 12px" },
+  wrap: {
+    padding: "0 14px 12px",
+  },
 
   row: {
     display: "flex",
@@ -172,8 +174,17 @@ const styles = {
     marginBottom: 8,
   },
 
+  grid2: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: 10,
+    marginBottom: 10,
+  },
+
   group: {
-    marginBottom: 12,
+    padding: 10,
+    borderRadius: 10,
+    background: "rgba(255,255,255,0.03)",
   },
 
   title: {
