@@ -14,29 +14,40 @@ keywords: [
 
 "チョコミント スタバ",
 
+"チョコミント スターバックス",
+
 "チョコミント タリーズ",
 
 "チョコミント ドトール",
 
 ],
 
+emojiSet: [
+"🍫",
+"🌿",
+"🧊",
+"🍨",
+"🥤",
+"🟢",
+],
+
 colors: {
-// ミントネオン
+// メイン
 primary: "#63ffd2",
 
-// 青緑系背景
+// 背景
 background: "#061b1f",
 
 stickyBg:
   "rgba(6,27,31,0.92)",
 
-// 少し明るめカード
+// カード
 cardBg: "#10323a",
 
-// inactive
+// 非アクティブUI
 navInactive: "#214851",
 
-// input
+// 入力欄
 inputBg: "#123941",
 
 inputText: "#ffffff",
@@ -46,7 +57,7 @@ badgeBg: "#1ec8a5",
 
 readBadge: "#4f8d84",
 
-// skeleton
+// Skeleton
 skeleton: "#184750",
 
 },
