@@ -1,17 +1,22 @@
-// src/themes/choco.js
-
 export const theme = {
 id: "choco",
 
 title: "CHOCO 🌿 SPOT",
 
-// 必ず実RSSを入れる
-rss: [
-"https://www.sej.co.jp/rss/newitem.xml",
+keywords: [
+"チョコミント コンビニ",
 
-"https://www.lawson.co.jp/recommend/new/list/rss/index.xml",
+"チョコミント セブン",
 
-"https://www.family.co.jp/rss/familymart.xml",
+"チョコミント ファミマ",
+
+"チョコミント ローソン",
+
+"チョコミント スタバ",
+
+"チョコミント タリーズ",
+
+"チョコミント ドトール",
 
 ],
 
@@ -20,7 +25,8 @@ primary: "#62d2a2",
 
 background: "#08120f",
 
-stickyBg: "rgba(8,18,15,0.92)",
+stickyBg:
+  "rgba(8,18,15,0.92)",
 
 cardBg: "#10211d",
 
