@@ -21,27 +21,33 @@ keywords: [
 ],
 
 colors: {
-// チョコミント感強め
-primary: "#5ee6b3",
+// ミントネオン
+primary: "#63ffd2",
 
-background: "#071612",
+// 青緑系背景
+background: "#061b1f",
 
 stickyBg:
-  "rgba(7,22,18,0.92)",
+  "rgba(6,27,31,0.92)",
 
-cardBg: "#0f2620",
+// 少し明るめカード
+cardBg: "#10323a",
 
-navInactive: "#1e3b33",
+// inactive
+navInactive: "#214851",
 
-inputBg: "#123028",
+// input
+inputBg: "#123941",
 
 inputText: "#ffffff",
 
-badgeBg: "#2a6b57",
+// バッジ
+badgeBg: "#1ec8a5",
 
-readBadge: "#567d70",
+readBadge: "#4f8d84",
 
-skeleton: "#16352d",
+// skeleton
+skeleton: "#184750",
 
 },
 };
