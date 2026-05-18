@@ -31,6 +31,9 @@ export default function HomePage({
   const [readItems, setReadItems] =
     useState([]);
 
+  const [keyword, setKeyword] =
+    useState("");
+
   // 初回ロード
   useEffect(() => {
     fetchNews();
@@ -132,13 +135,27 @@ export default function HomePage({
       list = favorites;
     }
 
+    // キーワード検索
+    if (keyword.trim()) {
+      list = list.filter((item) =>
+        item.title
+          ?.toLowerCase()
+          .includes(
+            keyword.toLowerCase()
+          )
+      );
+    }
+
     // フィルタ
     if (filter !== "all") {
       list = list.filter((item) => {
         const title =
           item.title || "";
 
-        if (filter === "convenience") {
+        if (
+          filter ===
+          "convenience"
+        ) {
           return (
             title.includes(
               "セブン"
@@ -147,7 +164,13 @@ export default function HomePage({
               "ファミマ"
             ) ||
             title.includes(
+              "ファミリーマート"
+            ) ||
+            title.includes(
               "ローソン"
+            ) ||
+            title.includes(
+              "LAWSON"
             )
           );
         }
@@ -161,7 +184,13 @@ export default function HomePage({
               "スターバックス"
             ) ||
             title.includes(
+              "Starbucks"
+            ) ||
+            title.includes(
               "タリーズ"
+            ) ||
+            title.includes(
+              "TULLY"
             ) ||
             title.includes(
               "ドトール"
@@ -178,7 +207,13 @@ export default function HomePage({
               "ファミマ"
             ) ||
             title.includes(
+              "ファミリーマート"
+            ) ||
+            title.includes(
               "ローソン"
+            ) ||
+            title.includes(
+              "LAWSON"
             ) ||
             title.includes(
               "スタバ"
@@ -187,7 +222,13 @@ export default function HomePage({
               "スターバックス"
             ) ||
             title.includes(
+              "Starbucks"
+            ) ||
+            title.includes(
               "タリーズ"
+            ) ||
+            title.includes(
+              "TULLY"
             ) ||
             title.includes(
               "ドトール"
@@ -233,6 +274,7 @@ export default function HomePage({
     sort,
     showUnreadOnly,
     readItems,
+    keyword,
   ]);
 
   return (
@@ -246,10 +288,10 @@ export default function HomePage({
         color: "#fff",
       }}
     >
-      {/* 固定ヘッダー */}
+      {/* ヘッダー */}
       <div
         style={{
-          position: "relative",
+          position: "sticky",
 
           top: 0,
 
@@ -278,9 +320,21 @@ export default function HomePage({
           count={
             filteredItems.length
           }
+          keyword={keyword}
+          setKeyword={setKeyword}
           theme={theme}
         />
       </div>
+
+      {/* 固定余白 */}
+      <div
+        style={{
+          height: 16,
+
+          background:
+            theme.colors.background,
+        }}
+      />
 
       {/* ローディング */}
       {loading ? (
@@ -295,7 +349,7 @@ export default function HomePage({
         <div
           style={{
             padding:
-              "12px 14px 80px",
+              "12px 14px calc(140px + env(safe-area-inset-bottom))",
 
             display: "grid",
 
