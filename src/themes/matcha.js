@@ -1,32 +1,40 @@
+// src/themes/matcha.js
+
 export const theme = {
-  id: "matcha",
+id: "matcha",
 
-  title: "MATCHA 🍵 SPOT",
+title: "METCHA 🍵 MATCHA",
 
-  rss: [
-    "https://example.com/rss",
-  ],
+// 必ず実RSSを入れる
+rss: [
+"https://www.sej.co.jp/rss/newitem.xml",
 
-  colors: {
-    primary: "#7bcf8f",
+"https://www.lawson.co.jp/recommend/new/list/rss/index.xml",
 
-    background: "#08120b",
+"https://www.family.co.jp/rss/familymart.xml",
 
-    stickyBg:
-      "rgba(8,18,11,0.92)",
+],
 
-    cardBg: "#102117",
+colors: {
+primary: "#7bcf8f",
 
-    navInactive: "#223329",
+background: "#08120b",
 
-    inputBg: "#12231a",
+stickyBg: "rgba(8,18,11,0.92)",
 
-    inputText: "#ffffff",
+cardBg: "#102117",
 
-    badgeBg: "#2f5d43",
+navInactive: "#223329",
 
-    readBadge: "#5d7c67",
+inputBg: "#12231a",
 
-    skeleton: "#1b2e22",
-  },
+inputText: "#ffffff",
+
+badgeBg: "#2f5d43",
+
+readBadge: "#5d7c67",
+
+skeleton: "#1b2e22",
+
+},
 };
