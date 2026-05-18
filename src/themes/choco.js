@@ -1,32 +1,40 @@
+// src/themes/choco.js
+
 export const theme = {
-  id: "choco",
+id: "choco",
 
-  title: "CHOCO 🌿 SPOT",
+title: "CHOCO 🌿 SPOT",
 
-  rss: [
-    "https://example.com/rss",
-  ],
+// 必ず実RSSを入れる
+rss: [
+"https://www.sej.co.jp/rss/newitem.xml",
 
-  colors: {
-    primary: "#62d2a2",
+"https://www.lawson.co.jp/recommend/new/list/rss/index.xml",
 
-    background: "#08120f",
+"https://www.family.co.jp/rss/familymart.xml",
 
-    stickyBg:
-      "rgba(8,18,15,0.92)",
+],
 
-    cardBg: "#10211d",
+colors: {
+primary: "#62d2a2",
 
-    navInactive: "#23352f",
+background: "#08120f",
 
-    inputBg: "#11251f",
+stickyBg: "rgba(8,18,15,0.92)",
 
-    inputText: "#ffffff",
+cardBg: "#10211d",
 
-    badgeBg: "#1e3932",
+navInactive: "#23352f",
 
-    readBadge: "#5f7b73",
+inputBg: "#11251f",
 
-    skeleton: "#1b2f28",
-  },
+inputText: "#ffffff",
+
+badgeBg: "#1e3932",
+
+readBadge: "#5f7b73",
+
+skeleton: "#1b2f28",
+
+},
 };
