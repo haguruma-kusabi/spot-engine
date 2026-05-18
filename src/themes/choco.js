@@ -3,43 +3,30 @@ export const theme = {
 
   title: "CHOCO 🌿 SPOT",
 
-  emoji: "🍫",
+  rss: [
+    "https://example.com/rss",
+  ],
 
   colors: {
-    background:
-      "linear-gradient(180deg,#0f2027,#203a43,#2c5364)",
+    primary: "#62d2a2",
 
-    primary: "#00c6ff",
+    background: "#08120f",
 
-    card: "#ffffff",
+    stickyBg:
+      "rgba(8,18,15,0.92)",
 
-    cardText: "#111111",
+    cardBg: "#10211d",
 
-    mutedText: "#6b7280",
+    navInactive: "#23352f",
 
-    badge: "#2ecc71",
+    inputBg: "#11251f",
 
-    badgeText: "#ffffff",
+    inputText: "#ffffff",
 
-    readBadge: "#57606f",
+    badgeBg: "#1e3932",
 
-    skeleton: "#ffffff22",
+    readBadge: "#5f7b73",
 
-    navInactive: "#2a2f36",
-
-    inputBg: "#ffffff",
-
-    inputText: "#111111",
-
-    stickyBg: "rgba(0,0,0,0.28)",
+    skeleton: "#1b2f28",
   },
-
-  shadow:
-    "0 6px 16px rgba(0,0,0,0.18)",
-
-  keywords: [
-    "チョコミント",
-    "チョコミントアイス",
-    "チョコミント新商品",
-  ],
 };
