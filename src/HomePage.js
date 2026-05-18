@@ -1,22 +1,29 @@
-// src/HomePage.js
-
 import { useEffect, useMemo, useState } from "react";
-
-import Layout from "./components/Layout";
 
 import Header from "./components/Header";
 import FilterBar from "./components/FilterBar";
 import NewsCard from "./components/NewsCard";
 
-import {
-  GROUPS,
-  getBrand,
-} from "./lib/brand";
-
 export default function HomePage({
   theme,
 }) {
-  const [items, setItems] = useState([]);
+  const [items, setItems] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [tab, setTab] =
+    useState("all");
+
+  const [filter, setFilter] =
+    useState("all");
+
+  const [sort, setSort] =
+    useState("new");
+
+  const [showUnreadOnly, setShowUnreadOnly] =
+    useState(false);
 
   const [favorites, setFavorites] =
     useState([]);
@@ -24,54 +31,52 @@ export default function HomePage({
   const [readItems, setReadItems] =
     useState([]);
 
-  const [keyword, setKeyword] =
-    useState("");
-
-  const [activeGroups, setActiveGroups] =
-    useState([]);
-
-  const [range, setRange] = useState(14);
-
-  const [tab, setTab] = useState("all");
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [unreadOnly, setUnreadOnly] =
-    useState(false);
-
-  const [lastUpdated, setLastUpdated] =
-    useState("");
-
-  /* =========================
-     ■ 初期化
-  ========================= */
+  // 初回ロード
   useEffect(() => {
-    fetchData();
+    fetchNews();
+  }, []);
 
-    const savedFav =
+  // お気に入り復元
+  useEffect(() => {
+    const saved =
       localStorage.getItem(
-        `${theme.id}-fav`
+        `${theme.id}-favorites`
       );
 
-    if (savedFav) {
-      setFavorites(JSON.parse(savedFav));
+    if (saved) {
+      setFavorites(JSON.parse(saved));
     }
+  }, [theme.id]);
 
-    const savedRead =
+  // 既読復元
+  useEffect(() => {
+    const saved =
       localStorage.getItem(
         `${theme.id}-read`
       );
 
-    if (savedRead) {
-      setReadItems(JSON.parse(savedRead));
+    if (saved) {
+      setReadItems(JSON.parse(saved));
     }
   }, [theme.id]);
 
-  /* =========================
-     ■ データ取得
-  ========================= */
-  const fetchData = async () => {
+  // お気に入り保存
+  useEffect(() => {
+    localStorage.setItem(
+      `${theme.id}-favorites`,
+      JSON.stringify(favorites)
+    );
+  }, [favorites, theme.id]);
+
+  // 既読保存
+  useEffect(() => {
+    localStorage.setItem(
+      `${theme.id}-read`,
+      JSON.stringify(readItems)
+    );
+  }, [readItems, theme.id]);
+
+  async function fetchNews() {
     try {
       setLoading(true);
 
@@ -81,291 +86,266 @@ export default function HomePage({
 
       const data = await res.json();
 
-      setItems(data);
-
-      const now = new Date();
-
-      setLastUpdated(
-        now.toLocaleTimeString("ja-JP", {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      );
+      setItems(data || []);
     } catch (e) {
       console.log(e);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  /* =========================
-     ■ お気に入り
-  ========================= */
-  const toggleFav = (item) => {
-    const exists = favorites.some(
-      (f) => f.link === item.link
-    );
+  function toggleFav(item) {
+    setFavorites((prev) => {
+      const exists = prev.some(
+        (f) => f.link === item.link
+      );
 
-    const updated = exists
-      ? favorites.filter(
+      if (exists) {
+        return prev.filter(
           (f) => f.link !== item.link
-        )
-      : [...favorites, item];
-
-    setFavorites(updated);
-
-    localStorage.setItem(
-      `${theme.id}-fav`,
-      JSON.stringify(updated)
-    );
-  };
-
-  /* =========================
-     ■ 既読
-  ========================= */
-  const markAsRead = (link) => {
-    if (readItems.includes(link))
-      return;
-
-    const updated = [...readItems, link];
-
-    setReadItems(updated);
-
-    localStorage.setItem(
-      `${theme.id}-read`,
-      JSON.stringify(updated)
-    );
-  };
-
-  /* =========================
-     ■ 既読リセット
-  ========================= */
-  const clearRead = () => {
-    localStorage.removeItem(
-      `${theme.id}-read`
-    );
-
-    setReadItems([]);
-  };
-
-  /* =========================
-     ■ グループ切替
-  ========================= */
-  const toggleGroup = (g) => {
-    setActiveGroups((prev) =>
-      prev.includes(g)
-        ? prev.filter((x) => x !== g)
-        : [...prev, g]
-    );
-  };
-
-  /* =========================
-     ■ フィルタ
-  ========================= */
-  const baseList =
-    tab === "fav" ? favorites : items;
-
-  const filtered = useMemo(() => {
-    return baseList.filter((item) => {
-      const text = (
-        item.title +
-        item.link
-      ).toLowerCase();
-
-      if (
-        keyword &&
-        !text.includes(keyword.toLowerCase())
-      ) {
-        return false;
-      }
-
-      const brand = getBrand(item);
-
-      if (activeGroups.length > 0) {
-        const ok = activeGroups.some((g) =>
-          GROUPS[g].includes(brand)
         );
-
-        if (!ok) return false;
       }
 
-      const diff =
-        (new Date() -
-          new Date(item.date)) /
-        (1000 * 60 * 60 * 24);
-
-      if (diff > range) return false;
-
-      if (
-        unreadOnly &&
-        readItems.includes(item.link)
-      ) {
-        return false;
-      }
-
-      return true;
+      return [item, ...prev];
     });
+  }
+
+  function markAsRead(link) {
+    setReadItems((prev) => {
+      if (prev.includes(link)) {
+        return prev;
+      }
+
+      return [link, ...prev];
+    });
+  }
+
+  function resetRead() {
+    setReadItems([]);
+  }
+
+  const filteredItems = useMemo(() => {
+    let list = [...items];
+
+    // タブ
+    if (tab === "favorites") {
+      list = favorites;
+    }
+
+    // フィルタ
+    if (filter !== "all") {
+      list = list.filter((item) => {
+        const title =
+          item.title || "";
+
+        if (filter === "convenience") {
+          return (
+            title.includes(
+              "セブン"
+            ) ||
+            title.includes(
+              "ファミマ"
+            ) ||
+            title.includes(
+              "ローソン"
+            )
+          );
+        }
+
+        if (filter === "cafe") {
+          return (
+            title.includes(
+              "スタバ"
+            ) ||
+            title.includes(
+              "スターバックス"
+            ) ||
+            title.includes(
+              "タリーズ"
+            ) ||
+            title.includes(
+              "ドトール"
+            )
+          );
+        }
+
+        if (filter === "other") {
+          return !(
+            title.includes(
+              "セブン"
+            ) ||
+            title.includes(
+              "ファミマ"
+            ) ||
+            title.includes(
+              "ローソン"
+            ) ||
+            title.includes(
+              "スタバ"
+            ) ||
+            title.includes(
+              "スターバックス"
+            ) ||
+            title.includes(
+              "タリーズ"
+            ) ||
+            title.includes(
+              "ドトール"
+            )
+          );
+        }
+
+        return true;
+      });
+    }
+
+    // 未読のみ
+    if (showUnreadOnly) {
+      list = list.filter(
+        (item) =>
+          !readItems.includes(
+            item.link
+          )
+      );
+    }
+
+    // ソート
+    list.sort((a, b) => {
+      if (sort === "old") {
+        return (
+          new Date(a.date) -
+          new Date(b.date)
+        );
+      }
+
+      return (
+        new Date(b.date) -
+        new Date(a.date)
+      );
+    });
+
+    return list;
   }, [
-    baseList,
-    keyword,
-    activeGroups,
-    range,
-    unreadOnly,
+    items,
+    favorites,
+    tab,
+    filter,
+    sort,
+    showUnreadOnly,
     readItems,
   ]);
 
-  /* 今日件数 */
-  const todayCount = items.filter((item) => {
-    const diff =
-      (new Date() -
-        new Date(item.date)) /
-      (1000 * 60 * 60 * 24);
-
-    return diff <= 1;
-  }).length;
-
   return (
-    <Layout
-      theme={theme}
-      header={
-        <>
-          <Header
-            theme={theme}
-            filteredCount={
-              filtered.length
-            }
-            todayCount={todayCount}
-            lastUpdated={
-              lastUpdated
-            }
-          />
+    <div
+      style={{
+        minHeight: "100vh",
 
-          <FilterBar
-            theme={theme}
-            tab={tab}
-            setTab={setTab}
-            favorites={favorites}
-            keyword={keyword}
-            setKeyword={
-              setKeyword
-            }
-            range={range}
-            setRange={setRange}
-            activeGroups={
-              activeGroups
-            }
-            toggleGroup={
-              toggleGroup
-            }
-            unreadOnly={
-              unreadOnly
-            }
-            setUnreadOnly={
-              setUnreadOnly
-            }
-            clearRead={clearRead}
-          />
-        </>
-      }
+        background:
+          theme.colors.background,
+
+        color: "#fff",
+      }}
     >
-      {/* ローディング */}
-      {loading && (
-        <>
-          <div
-            style={
-              styles.loadingText
-            }
-          >
-            読み込み中...
-          </div>
+      {/* 固定ヘッダー */}
+      <div
+        style={{
+          position: "sticky",
 
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              style={{
-                ...styles.skeleton,
-                background:
-                  theme.colors
-                    .skeleton,
-              }}
-            />
-          ))}
-        </>
-      )}
+          top: 0,
 
-      {/* 空状態 */}
-      {!loading &&
-        filtered.length === 0 && (
-          <div
-            style={styles.emptyBox}
-          >
-            条件に一致する記事がありません
-          </div>
-        )}
+          zIndex: 100,
 
-      {/* カード */}
-      <div style={styles.grid}>
-        {!loading &&
-          filtered.map((item, i) => (
-            <NewsCard
-              key={item.link || i}
-              item={item}
-              favorites={favorites}
-              readItems={readItems}
-              toggleFav={
-                toggleFav
-              }
-              markAsRead={
-                markAsRead
-              }
-              theme={theme}
-            />
-          ))}
+          backdropFilter:
+            "blur(10px)",
+
+          background:
+            theme.colors.stickyBg,
+        }}
+      >
+        <Header theme={theme} />
+
+        <FilterBar
+          tab={tab}
+          setTab={setTab}
+          filter={filter}
+          setFilter={setFilter}
+          sort={sort}
+          setSort={setSort}
+          showUnreadOnly={
+            showUnreadOnly
+          }
+          setShowUnreadOnly={
+            setShowUnreadOnly
+          }
+          resetRead={resetRead}
+          count={
+            filteredItems.length
+          }
+          theme={theme}
+        />
       </div>
-    </Layout>
+
+      {/* スクロール余白固定 */}
+      <div
+        style={{
+          height: 12,
+          background:
+            theme.colors.background,
+          position: "sticky",
+          top: 148,
+          zIndex: 90,
+        }}
+      />
+
+      {/* ローディング */}
+      {loading ? (
+        <div
+          style={{
+            padding: 24,
+          }}
+        >
+          読み込み中...
+        </div>
+      ) : (
+        <div
+          style={{
+            padding:
+              "0 14px 40px",
+
+            display: "grid",
+
+            gridTemplateColumns:
+              "repeat(auto-fill,minmax(220px,1fr))",
+
+            gap: 16,
+          }}
+        >
+          {filteredItems.map(
+            (item, i) => (
+              <NewsCard
+                key={
+                  item.link || i
+                }
+                item={item}
+                favorites={
+                  favorites
+                }
+                readItems={
+                  readItems
+                }
+                toggleFav={
+                  toggleFav
+                }
+                markAsRead={
+                  markAsRead
+                }
+                theme={theme}
+                index={i}
+              />
+            )
+          )}
+        </div>
+      )}
+    </div>
   );
 }
-
-const styles = {
-  grid: {
-    display: "grid",
-
-    gap: 18,
-
-    overflowY: "auto",
-
-    height: "100%",
-
-    scrollbarWidth: "none",
-
-    msOverflowStyle: "none",
-  },
-
-  loadingText: {
-    textAlign: "center",
-
-    fontSize: 12,
-
-    marginTop: 24,
-
-    marginBottom: 14,
-  },
-
-  emptyBox: {
-    textAlign: "center",
-
-    padding: 24,
-
-    fontSize: 13,
-
-    color: "#d7e0e5",
-  },
-
-  skeleton: {
-    height: 170,
-
-    borderRadius: 18,
-
-    marginBottom: 10,
-  },
-};
