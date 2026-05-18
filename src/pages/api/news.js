@@ -17,7 +17,7 @@ return res.status(404).json([]);
 
 try {
 const items = await fetchRSS(
-theme.rss
+theme.keywords
 );
 
 res.status(200).json(items);
