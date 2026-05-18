@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 
 export default function NewsCard({
@@ -11,6 +11,12 @@ export default function NewsCard({
   index = 0,
 }) {
   const [hover, setHover] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [ripple, setRipple] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const brand = item.brand;
 
@@ -31,42 +37,38 @@ export default function NewsCard({
   const emojis = theme.emojiSet || ["📰"];
   const emoji = emojis[index % emojis.length];
 
-  // ★既読の見た目制御
-  const readStyle = isRead
-    ? {
-        opacity: 0.55,
-        filter: "grayscale(0.6)",
-      }
-    : {};
+  function handleClick(e) {
+    setRipple(true);
+    markAsRead(item.link);
 
-  // ★ホバー演出
-  const hoverStyle = hover
-    ? {
-        transform: "translateY(-4px)",
-        boxShadow: "0 10px 25px rgba(0,0,0,0.35)",
-      }
-    : {};
+    setTimeout(() => setRipple(false), 400);
+  }
 
   return (
     <div
       style={{
         ...styles.card,
-        ...hoverStyle,
-        ...readStyle,
         background: theme.colors.cardBg,
+
+        // フェードイン
+        opacity: mounted ? 1 : 0,
+        transform: mounted
+          ? hover
+            ? "translateY(-4px)"
+            : "translateY(0px)"
+          : "translateY(10px)",
+
+        boxShadow: hover
+          ? "0 12px 28px rgba(0,0,0,0.35)"
+          : "0 4px 14px rgba(0,0,0,0.25)",
       }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
       {/* NEW / 既読（左上） */}
       {!isRead && isNew && (
-        <div
-          style={{
-            ...styles.status,
-            background: theme.colors.primary,
-          }}
-        >
-          NEW
+        <div style={{ ...styles.status, background: theme.colors.primary }}>
+          <span style={styles.pulse}>NEW</span>
         </div>
       )}
 
@@ -93,21 +95,19 @@ export default function NewsCard({
         </div>
       )}
 
-      {/* 画像 */}
+      {/* 画像エリア（ripple対象） */}
       <a
         href={item.link}
         target="_blank"
         rel="noreferrer"
-        onClick={() => markAsRead(item.link)}
+        onClick={handleClick}
         style={styles.imageLink}
       >
-        <div
-          style={{
-            ...styles.imageBox,
-            background: theme.colors.skeleton,
-          }}
-        >
+        <div style={styles.imageBox}>
           <div style={styles.emoji}>{emoji}</div>
+
+          {/* ripple effect */}
+          {ripple && <span style={styles.ripple} />}
         </div>
       </a>
 
@@ -123,7 +123,6 @@ export default function NewsCard({
           {item.title}
         </a>
 
-        {/* フッター */}
         <div style={styles.footer}>
           <div style={styles.date}>
             {new Date(item.date).toLocaleDateString("ja-JP")}
@@ -152,11 +151,7 @@ const styles = {
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
-    boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
-
-    // ★ホバー用（重要）
-    transition: "transform 0.18s ease, box-shadow 0.18s ease",
-    cursor: "pointer",
+    transition: "all 0.25s ease",
   },
 
   status: {
@@ -192,11 +187,13 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    position: "relative",
+    overflow: "hidden",
   },
 
   emoji: {
     fontSize: 42,
-    transition: "transform 0.2s ease",
+    zIndex: 2,
   },
 
   body: {
@@ -210,7 +207,6 @@ const styles = {
     color: "#fff",
     textDecoration: "none",
     fontSize: 15,
-    lineHeight: 1.5,
     fontWeight: 700,
   },
 
@@ -231,5 +227,20 @@ const styles = {
     background: "transparent",
     cursor: "pointer",
     padding: 0,
+  },
+
+  // ripple
+  ripple: {
+    position: "absolute",
+    width: 120,
+    height: 120,
+    borderRadius: "50%",
+    background: "rgba(255,255,255,0.25)",
+    animation: "ripple 0.4s ease-out",
+  },
+
+  // NEW pulse（簡易）
+  pulse: {
+    animation: "pulse 1.5s infinite",
   },
 };
