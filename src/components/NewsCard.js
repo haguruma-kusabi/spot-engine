@@ -1,300 +1,280 @@
-// components/NewsCard.js
-
-import {
-  getBrand,
-  getBrandColor,
-} from "../lib/brand";
-
-/* =========================
-   ■ 絵文字
-========================= */
-const getEmoji = (text = "") => {
-  if (/アイス/.test(text)) return "🍨";
-
-  if (/ラテ|ドリンク/.test(text))
-    return "🍵";
-
-  if (/ケーキ|スイーツ/.test(text))
-    return "🍡";
-
-  if (/抹茶/.test(text)) return "🍵";
-
-  if (/チョコミント/.test(text))
-    return "🍫";
-
-  return "🌿";
-};
+import { Heart } from "lucide-react";
 
 export default function NewsCard({
-  item,
-  favorites,
-  readItems,
-  toggleFav,
-  markAsRead,
-  theme,
+item,
+favorites,
+readItems,
+toggleFav,
+markAsRead,
+theme,
+index = 0,
 }) {
-  const brand = getBrand(item);
+const isFav = favorites.some(
+(f) => f.link === item.link
+);
 
-  const isFav = favorites.some(
-    (f) => f.link === item.link
-  );
+const isRead =
+readItems.includes(item.link);
 
-  const isRead =
-    readItems.includes(item.link);
+const emojis =
+theme.emojiSet || ["📰"];
 
-  const isNew =
-    (new Date() -
-      new Date(item.date)) /
-      (1000 * 60 * 60 * 24) <=
-    3;
+const emoji =
+emojis[
+index % emojis.length
+];
 
-  return (
+const isNew = (() => {
+const diff =
+(new Date() -
+new Date(item.date)) /
+(1000 * 60 * 60 * 24);
+
+return diff <= 3;
+
+})();
+
+return (
+<div
+style={{
+...styles.card,
+
+    background:
+      theme.colors.cardBg,
+  }}
+>
+  {/* 新着バッジ */}
+  {isNew && (
     <div
-      style={styles.card(
-        isRead,
-        theme
-      )}
+      style={{
+        ...styles.newBadge,
+
+        background:
+          theme.colors.primary,
+      }}
     >
-      {/* NEW */}
-      {isNew && (
-        <div
-          style={styles.newBadge(
-            theme
-          )}
-        >
-          NEW
-        </div>
-      )}
+      NEW
+    </div>
+  )}
 
-      {/* 既読 */}
-      {isRead && (
-        <div
-          style={styles.readBadge(
-            theme
-          )}
-        >
-          既読
-        </div>
-      )}
+  {/* 既読バッジ */}
+  {isRead && (
+    <div
+      style={{
+        ...styles.readBadge,
 
-      {/* ブランド */}
-      <div
-        style={{
-          ...styles.brandBadge,
-          background:
-            getBrandColor(brand),
-        }}
-      >
-        {brand}
-      </div>
+        background:
+          theme.colors.readBadge,
+      }}
+    >
+      既読
+    </div>
+  )}
 
-      {/* 画像 */}
-      <a
-        href={item.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() =>
-          markAsRead(item.link)
-        }
-        style={{
-          textDecoration: "none",
-        }}
-      >
-        <div style={styles.emojiBox}>
-          {getEmoji(item.title)}
-        </div>
-      </a>
+  {/* 画像 */}
+  <a
+    href={item.link}
+    target="_blank"
+    rel="noreferrer"
+    onClick={() =>
+      markAsRead(item.link)
+    }
+    style={styles.imageLink}
+  >
+    <div
+      style={{
+        ...styles.imageBox,
 
-      {/* タイトル */}
-      <a
-        href={item.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() =>
-          markAsRead(item.link)
-        }
-        style={styles.titleLink}
-      >
-        <div
-          style={styles.titleText(
-            theme
-          )}
-        >
-          {item.title}
-        </div>
-      </a>
-
-      {/* 下部 */}
-      <div style={styles.bottomRow}>
-        <div
-          style={styles.dateText(
-            theme
-          )}
-        >
-          {new Date(
-            item.date
-          ).toLocaleDateString()}
-        </div>
-
-        <button
-          onClick={() => toggleFav(item)}
-          style={styles.favBtn}
-        >
-          {isFav ? "❤️" : "🤍"}
-        </button>
+        background:
+          theme.colors.skeleton,
+      }}
+    >
+      <div style={styles.emoji}>
+        {emoji}
       </div>
     </div>
-  );
+  </a>
+
+  {/* 本文 */}
+  <div style={styles.body}>
+    <a
+      href={item.link}
+      target="_blank"
+      rel="noreferrer"
+      onClick={() =>
+        markAsRead(item.link)
+      }
+      style={styles.title}
+    >
+      {item.title}
+    </a>
+
+    {/* 下部 */}
+    <div style={styles.footer}>
+      <div style={styles.date}>
+        {new Date(
+          item.date
+        ).toLocaleDateString(
+          "ja-JP"
+        )}
+      </div>
+
+      <button
+        onClick={() =>
+          toggleFav(item)
+        }
+        style={styles.favBtn}
+      >
+        <Heart
+          size={18}
+          fill={
+            isFav
+              ? theme.colors
+                  .primary
+              : "transparent"
+          }
+          color={
+            isFav
+              ? theme.colors
+                  .primary
+              : "#fff"
+          }
+        />
+      </button>
+    </div>
+  </div>
+</div>
+
+);
 }
 
 const styles = {
-  card: (isRead, theme) => ({
-    background:
-      theme.colors.card,
+card: {
+position: "relative",
 
-    color:
-      theme.colors.cardText,
+borderRadius: 20,
 
-    borderRadius: 18,
+overflow: "hidden",
 
-    padding: 12,
+display: "flex",
 
-    position: "relative",
+flexDirection: "column",
 
-    boxShadow: theme.shadow,
+boxShadow:
+  "0 4px 14px rgba(0,0,0,0.25)",
 
-    opacity: isRead ? 0.65 : 1,
-  }),
+},
 
-  newBadge: (theme) => ({
-    position: "absolute",
+imageLink: {
+textDecoration: "none",
+},
 
-    top: 8,
+imageBox: {
+height: 120,
 
-    left: 8,
+display: "flex",
 
-    background:
-      theme.colors.badge,
+alignItems: "center",
 
-    color:
-      theme.colors.badgeText,
+justifyContent: "center",
 
-    fontSize: 12,
+},
 
-    fontWeight: "bold",
+emoji: {
+fontSize: 42,
+},
 
-    padding: "5px 9px",
+body: {
+padding: 14,
 
-    borderRadius: 9,
+display: "flex",
 
-    zIndex: 2,
-  }),
+flexDirection: "column",
 
-  readBadge: (theme) => ({
-    position: "absolute",
+gap: 10,
 
-    top: 44,
+},
 
-    left: 8,
+title: {
+color: "#fff",
 
-    background:
-      theme.colors.readBadge,
+textDecoration: "none",
 
-    color: "#fff",
+fontSize: 15,
 
-    fontSize: 11,
+lineHeight: 1.5,
 
-    fontWeight: "bold",
+fontWeight: 700,
 
-    padding: "4px 9px",
+},
 
-    borderRadius: 8,
+footer: {
+display: "flex",
 
-    zIndex: 2,
-  }),
+alignItems: "center",
 
-  brandBadge: {
-    position: "absolute",
+justifyContent:
+  "space-between",
 
-    top: 10,
+},
 
-    right: 10,
+date: {
+fontSize: 12,
 
-    color: "#fff",
+opacity: 0.7,
 
-    fontSize: 10,
+},
 
-    padding: "4px 8px",
+favBtn: {
+border: "none",
 
-    borderRadius: 8,
+background: "transparent",
 
-    zIndex: 2,
-  },
+cursor: "pointer",
 
-  emojiBox: {
-    height: 105,
+padding: 0,
 
-    display: "flex",
+},
 
-    alignItems: "center",
+newBadge: {
+position: "absolute",
 
-    justifyContent: "center",
+top: 10,
 
-    fontSize: 38,
+left: 10,
 
-    background: "#eef6f1",
+zIndex: 10,
 
-    borderRadius: 12,
+fontSize: 11,
 
-    marginBottom: 10,
-  },
+fontWeight: 700,
 
-  titleLink: {
-    textDecoration: "none",
-  },
+padding: "4px 8px",
 
-  titleText: (theme) => ({
-    color:
-      theme.colors.cardText,
+borderRadius: 999,
 
-    fontSize: 14,
+color: "#000",
 
-    fontWeight: "bold",
+},
 
-    lineHeight: 1.55,
+readBadge: {
+position: "absolute",
 
-    marginBottom: 10,
-  }),
+top: 42,
 
-  bottomRow: {
-    display: "flex",
+left: 10,
 
-    justifyContent:
-      "space-between",
+zIndex: 10,
 
-    alignItems: "center",
+fontSize: 11,
 
-    marginTop: 2,
-  },
+fontWeight: 700,
 
-  dateText: (theme) => ({
-    fontSize: 11,
+padding: "4px 8px",
 
-    color:
-      theme.colors.mutedText,
-  }),
+borderRadius: 999,
 
-  favBtn: {
-    border: "none",
+color: "#fff",
 
-    background: "transparent",
-
-    fontSize: 20,
-
-    cursor: "pointer",
-
-    padding: 0,
-
-    lineHeight: 1,
-  },
+},
 };
