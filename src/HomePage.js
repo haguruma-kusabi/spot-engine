@@ -11,37 +11,50 @@ export default function HomePage({ theme }) {
   const [loading, setLoading] = useState(true);
 
   const [tab, setTab] = useState("all");
-  const [filter, setFilter] = useState("all");
-
   const [range, setRange] = useState(7);
+
+  const [keyword, setKeyword] = useState("");
 
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
 
   const [favorites, setFavorites] = useState([]);
   const [readItems, setReadItems] = useState([]);
 
-  const [keyword, setKeyword] = useState("");
+  const [selectedBrands, setSelectedBrands] = useState({
+    convenience: [],
+    cafe: [],
+  });
 
   useEffect(() => {
     fetchNews();
   }, []);
 
   useEffect(() => {
-    const saved = localStorage.getItem(`${theme.id}-favorites`);
-    if (saved) setFavorites(JSON.parse(saved));
+    const savedFav = localStorage.getItem(
+      `${theme.id}-favorites`
+    );
+    if (savedFav) setFavorites(JSON.parse(savedFav));
   }, [theme.id]);
 
   useEffect(() => {
-    const saved = localStorage.getItem(`${theme.id}-read`);
-    if (saved) setReadItems(JSON.parse(saved));
+    const savedRead = localStorage.getItem(
+      `${theme.id}-read`
+    );
+    if (savedRead) setReadItems(JSON.parse(savedRead));
   }, [theme.id]);
 
   useEffect(() => {
-    localStorage.setItem(`${theme.id}-favorites`, JSON.stringify(favorites));
+    localStorage.setItem(
+      `${theme.id}-favorites`,
+      JSON.stringify(favorites)
+    );
   }, [favorites, theme.id]);
 
   useEffect(() => {
-    localStorage.setItem(`${theme.id}-read`, JSON.stringify(readItems));
+    localStorage.setItem(
+      `${theme.id}-read`,
+      JSON.stringify(readItems)
+    );
   }, [readItems, theme.id]);
 
   async function fetchNews() {
@@ -85,35 +98,40 @@ export default function HomePage({ theme }) {
   const filteredItems = useMemo(() => {
     let list = [...items];
 
-    // タブ
+    // tab
     if (tab === "favorites") {
       list = favorites;
     }
 
-    // 検索
+    // keyword
     if (keyword.trim()) {
       list = list.filter((item) =>
         item.title?.toLowerCase().includes(keyword.toLowerCase())
       );
     }
 
-    // ブランドフィルター
-    if (filter !== "all") {
+    // brand filter（OR）
+    const hasBrandFilter =
+      selectedBrands.convenience.length > 0 ||
+      selectedBrands.cafe.length > 0;
+
+    if (hasBrandFilter) {
       list = list.filter((item) => {
-        if (filter === "convenience") {
-          return item.brand.group === "convenience";
-        }
-        if (filter === "cafe") {
-          return item.brand.group === "cafe";
-        }
-        if (filter === "other") {
-          return item.brand.group === "other";
-        }
-        return true;
+        const brand = item.brand;
+
+        const matchConvenience =
+          selectedBrands.convenience.length === 0 ||
+          selectedBrands.convenience.includes(brand.name);
+
+        const matchCafe =
+          selectedBrands.cafe.length === 0 ||
+          selectedBrands.cafe.includes(brand.name);
+
+        return matchConvenience || matchCafe;
       });
     }
 
-    // 期間フィルター
+    // range filter
     const now = new Date();
 
     list = list.filter((item) => {
@@ -124,28 +142,28 @@ export default function HomePage({ theme }) {
       return diff <= range;
     });
 
-    // 未読のみ
+    // unread filter
     if (showUnreadOnly) {
       list = list.filter(
         (item) => !readItems.includes(item.link)
       );
     }
 
-    // ソート
-    list.sort((a, b) => {
-      return new Date(b.date) - new Date(a.date);
-    });
+    // sort
+    list.sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
+    );
 
     return list;
   }, [
     items,
     favorites,
     tab,
-    filter,
+    keyword,
     range,
     showUnreadOnly,
     readItems,
-    keyword,
+    selectedBrands,
   ]);
 
   return (
@@ -169,8 +187,6 @@ export default function HomePage({ theme }) {
         <FilterBar
           tab={tab}
           setTab={setTab}
-          filter={filter}
-          setFilter={setFilter}
           range={range}
           setRange={setRange}
           showUnreadOnly={showUnreadOnly}
@@ -179,6 +195,8 @@ export default function HomePage({ theme }) {
           count={filteredItems.length}
           keyword={keyword}
           setKeyword={setKeyword}
+          selectedBrands={selectedBrands}
+          setSelectedBrands={setSelectedBrands}
           theme={theme}
         />
       </div>
@@ -217,11 +235,10 @@ export default function HomePage({ theme }) {
           bottom: 0,
           left: 0,
           width: "100%",
-          height: "calc(90px + env(safe-area-inset-bottom))",
+          height: "90px",
           background: theme.colors.background,
-          borderTop: "1px solid rgba(255,255,255,0.04)",
           pointerEvents: "none",
-          zIndex: 40,
+          zIndex: 50,
         }}
       />
     </div>
