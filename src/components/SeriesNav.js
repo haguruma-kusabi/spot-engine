@@ -1,117 +1,66 @@
-const SERIES = [
-  {
-    id: "choco",
-    title: "CHOCO 🌿 SPOT",
-    path: "/choco",
-    emoji: "🍫",
-  },
+import Link from "next/link";
 
-  {
-    id: "matcha",
-    title: "METCHA 🍵 MATCHA",
-    path: "/matcha",
-    emoji: "🍵",
-  },
-];
+import { themes } from "../themes";
 
 export default function SeriesNav({
   currentTheme,
   primary,
 }) {
   return (
-    <div style={styles.wrap}>
-      {SERIES.map((site) => {
-        const active =
-          site.id === currentTheme;
-
-        return (
-          <a
-            key={site.id}
-            href={site.path}
+    <div style={styles.row}>
+      {Object.values(themes).map(
+        (theme) => (
+          <Link
+            key={theme.id}
+            href={`/${theme.id}`}
             style={{
               ...styles.link,
 
-              background: active
-                ? primary
-                : "#2a2f36",
-
-              transform: active
-                ? "scale(1.03)"
-                : "scale(1)",
+              borderColor:
+                currentTheme ===
+                theme.id
+                  ? primary
+                  : "transparent",
             }}
           >
-            <span
-              style={styles.emoji}
-            >
-              {site.emoji}
-            </span>
-
-            <span>
-              {site.title}
-            </span>
-          </a>
-        );
-      })}
+            {theme.title}
+          </Link>
+        )
+      )}
     </div>
   );
 }
 
 const styles = {
-  wrap: {
+  row: {
     display: "flex",
 
     gap: 8,
 
     overflowX: "auto",
 
-    paddingBottom: 8,
-
-    marginBottom: 10,
+    marginBottom: 14,
 
     scrollbarWidth: "none",
-
-    msOverflowStyle: "none",
   },
 
   link: {
     flexShrink: 0,
 
-    display: "flex",
-
-    alignItems: "center",
-
-    gap: 6,
-
-    padding: "8px 12px",
+    padding:
+      "8px 12px",
 
     borderRadius: 999,
 
-    color: "#fff",
+    border: "1px solid",
 
     textDecoration: "none",
 
+    color: "#fff",
+
     fontSize: 12,
 
-    fontWeight: "bold",
-
-    transition:
-      "all 0.18s ease",
-  },
-
-  emoji: {
-    fontSize: 14,
+    background:
+      "rgba(255,255,255,0.06)",
   },
 };
-
-if (typeof document !== "undefined") {
-  const style =
-    document.createElement("style");
-
-  style.innerHTML = `
-    div::-webkit-scrollbar {
-      display: none;
-    }
-  `;
-
-  document.head.appendChild(style);
-}
