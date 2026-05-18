@@ -249,7 +249,7 @@ export default function HomePage({
       {/* 固定ヘッダー */}
       <div
         style={{
-          position: "sticky",
+          position: "relative",
 
           top: 0,
 
