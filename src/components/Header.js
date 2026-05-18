@@ -2,70 +2,36 @@ import SeriesNav from "./SeriesNav";
 
 export default function Header({
   theme,
-  filteredCount,
-  todayCount,
-  lastUpdated,
 }) {
   return (
-    <>
-      {/* シリーズナビ */}
+    <div style={styles.wrap}>
       <SeriesNav
         currentTheme={theme.id}
-        primary={theme.colors.primary}
+        primary={
+          theme.colors.primary
+        }
       />
 
-      {/* タイトル */}
       <h1 style={styles.title}>
         {theme.title}
       </h1>
-
-      {/* 情報 */}
-      <div style={styles.infoRow}>
-        <span>
-          {filteredCount}件ヒット
-        </span>
-
-        <span>
-          今日 {todayCount}件
-        </span>
-      </div>
-
-      <div style={styles.updateText}>
-        最終更新 {lastUpdated}
-      </div>
-    </>
+    </div>
   );
 }
 
 const styles = {
+  wrap: {
+    padding:
+      "14px 14px 10px",
+  },
+
   title: {
     textAlign: "center",
 
-    fontSize: 22,
+    fontSize: 24,
 
-    marginBottom: 14,
+    fontWeight: 700,
 
-    fontWeight: "bold",
-  },
-
-  infoRow: {
-    display: "flex",
-
-    justifyContent:
-      "space-between",
-
-    fontSize: 12,
-
-    color: "#d7e0e5",
-
-    marginBottom: 4,
-  },
-
-  updateText: {
-    fontSize: 11,
-
-    color: "#cfe7d3",
-
-    marginBottom: 6,
+    margin: 0,
   },
 };
