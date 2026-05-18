@@ -4,9 +4,7 @@ const parser = new XMLParser({
   ignoreAttributes: false,
 });
 
-export async function fetchRSS(
-  keywords = []
-) {
+export async function fetchRSS(keywords = []) {
   const all = [];
 
   for (const word of keywords) {
@@ -18,24 +16,45 @@ export async function fetchRSS(
 
       const res = await fetch(url);
 
+      if (!res.ok) continue;
+
       const xml = await res.text();
+
+      if (!xml || !xml.includes("<rss")) continue;
 
       const json = parser.parse(xml);
 
-      const items =
-        json?.rss?.channel?.item || [];
+      let items = json?.rss?.channel?.item || [];
+
+      // ★単体オブジェクト対策
+      if (!Array.isArray(items)) {
+        items = items ? [items] : [];
+      }
 
       for (const item of items) {
+        const title =
+          typeof item?.title === "string"
+            ? item.title
+            : item?.title?.["#text"] || "";
+
+        const link =
+          typeof item?.link === "string"
+            ? item.link
+            : item?.link?.["@_href"] || "";
+
+        const date =
+          item?.pubDate || new Date().toISOString();
+
+        if (!title || !link) continue;
+
         all.push({
-          title: item.title || "",
-          link: item.link || "",
-          date:
-            item.pubDate ||
-            new Date().toISOString(),
+          title,
+          link,
+          date,
         });
       }
     } catch (e) {
-      console.log(e);
+      console.log("RSS error:", e);
     }
   }
 
@@ -54,9 +73,7 @@ function dedupe(items) {
   }
 
   return [...map.values()].sort(
-    (a, b) =>
-      new Date(b.date) -
-      new Date(a.date)
+    (a, b) => new Date(b.date) - new Date(a.date)
   );
 }
 
