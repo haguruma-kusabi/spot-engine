@@ -326,17 +326,7 @@ export default function HomePage({
         />
       </div>
 
-      {/* 固定余白 */}
-      <div
-        style={{
-          height: 16,
-
-          background:
-            theme.colors.background,
-        }}
-      />
-
-      {/* ローディング */}
+      {/* 記事一覧 */}
       {loading ? (
         <div
           style={{
@@ -349,7 +339,7 @@ export default function HomePage({
         <div
           style={{
             padding:
-              "12px 14px calc(140px + env(safe-area-inset-bottom))",
+              "12px 14px 120px",
 
             display: "grid",
 
@@ -385,6 +375,32 @@ export default function HomePage({
           )}
         </div>
       )}
+
+      {/* 固定下部余白 */}
+      <div
+        style={{
+          position: "fixed",
+
+          bottom: 0,
+
+          left: 0,
+
+          width: "100%",
+
+          height:
+            "calc(70px + env(safe-area-inset-bottom))",
+
+          pointerEvents: "none",
+
+          background: `linear-gradient(
+            to top,
+            ${theme.colors.background},
+            transparent
+          )`,
+
+          zIndex: 50,
+        }}
+      />
     </div>
   );
 }
