@@ -8,6 +8,9 @@ export default function FilterBar({
   sort,
   setSort,
 
+  range,
+  setRange,
+
   showUnreadOnly,
   setShowUnreadOnly,
 
@@ -75,7 +78,7 @@ export default function FilterBar({
       </div>
 
       {/* フィルタ */}
-      <div style={styles.scrollRow}>
+      <div style={styles.row}>
         <button
           onClick={() =>
             setFilter("all")
@@ -130,7 +133,43 @@ export default function FilterBar({
       </div>
 
       {/* ユーティリティ */}
-      <div style={styles.scrollRow}>
+      <div style={styles.row}>
+        <select
+          value={range}
+          onChange={(e) =>
+            setRange(
+              Number(
+                e.target.value
+              )
+            )
+          }
+          style={{
+            ...styles.select,
+
+            background:
+              theme.colors.inputBg,
+
+            color:
+              theme.colors.inputText,
+          }}
+        >
+          <option value={3}>
+            3日
+          </option>
+
+          <option value={7}>
+            7日
+          </option>
+
+          <option value={14}>
+            14日
+          </option>
+
+          <option value={30}>
+            30日
+          </option>
+        </select>
+
         <select
           value={sort}
           onChange={(e) =>
@@ -156,7 +195,10 @@ export default function FilterBar({
             古い順
           </option>
         </select>
+      </div>
 
+      {/* 補助 */}
+      <div style={styles.row}>
         <button
           onClick={() =>
             setShowUnreadOnly(
@@ -207,18 +249,6 @@ const styles = {
     marginBottom: 8,
   },
 
-  scrollRow: {
-    display: "flex",
-
-    gap: 8,
-
-    overflowX: "auto",
-
-    paddingBottom: 4,
-
-    marginBottom: 8,
-  },
-
   search: {
     width: "100%",
 
@@ -234,7 +264,7 @@ const styles = {
   },
 
   select: {
-    minWidth: 120,
+    flex: 1,
 
     border: "none",
 
@@ -248,7 +278,7 @@ const styles = {
   },
 
   resetBtn: {
-    minWidth: 120,
+    flex: 1,
 
     border: "none",
 
@@ -259,8 +289,6 @@ const styles = {
     fontSize: 12,
 
     padding: 8,
-
-    whiteSpace: "nowrap",
   },
 
   count: {
@@ -297,7 +325,7 @@ const filterBtn = (
   active,
   theme
 ) => ({
-  minWidth: 120,
+  flex: 1,
 
   border: "none",
 
@@ -306,8 +334,6 @@ const filterBtn = (
   padding: 8,
 
   fontSize: 12,
-
-  whiteSpace: "nowrap",
 
   color: "#fff",
 
