@@ -1,17 +1,22 @@
-// src/themes/matcha.js
-
 export const theme = {
 id: "matcha",
 
 title: "METCHA 🍵 MATCHA",
 
-// 必ず実RSSを入れる
-rss: [
-"https://www.sej.co.jp/rss/newitem.xml",
+keywords: [
+"抹茶 コンビニ",
 
-"https://www.lawson.co.jp/recommend/new/list/rss/index.xml",
+"抹茶 セブン",
 
-"https://www.family.co.jp/rss/familymart.xml",
+"抹茶 ファミマ",
+
+"抹茶 ローソン",
+
+"抹茶 スタバ",
+
+"抹茶 タリーズ",
+
+"抹茶 ドトール",
 
 ],
 
@@ -20,7 +25,8 @@ primary: "#7bcf8f",
 
 background: "#08120b",
 
-stickyBg: "rgba(8,18,11,0.92)",
+stickyBg:
+  "rgba(8,18,11,0.92)",
 
 cardBg: "#102117",
 
