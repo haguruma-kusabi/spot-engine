@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Heart } from "lucide-react";
 
 export default function NewsCard({
@@ -9,6 +10,8 @@ export default function NewsCard({
   theme,
   index = 0,
 }) {
+  const [hover, setHover] = useState(false);
+
   const brand = item.brand;
 
   const isFav = favorites.some(
@@ -28,22 +31,57 @@ export default function NewsCard({
   const emojis = theme.emojiSet || ["📰"];
   const emoji = emojis[index % emojis.length];
 
+  // ★既読の見た目制御
+  const readStyle = isRead
+    ? {
+        opacity: 0.55,
+        filter: "grayscale(0.6)",
+      }
+    : {};
+
+  // ★ホバー演出
+  const hoverStyle = hover
+    ? {
+        transform: "translateY(-4px)",
+        boxShadow: "0 10px 25px rgba(0,0,0,0.35)",
+      }
+    : {};
+
   return (
-    <div style={{ ...styles.card, background: theme.colors.cardBg }}>
-      {/* 左上：NEW / 既読（優先表示） */}
+    <div
+      style={{
+        ...styles.card,
+        ...hoverStyle,
+        ...readStyle,
+        background: theme.colors.cardBg,
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      {/* NEW / 既読（左上） */}
       {!isRead && isNew && (
-        <div style={{ ...styles.status, background: theme.colors.primary }}>
+        <div
+          style={{
+            ...styles.status,
+            background: theme.colors.primary,
+          }}
+        >
           NEW
         </div>
       )}
 
       {isRead && (
-        <div style={{ ...styles.status, background: theme.colors.readBadge }}>
+        <div
+          style={{
+            ...styles.status,
+            background: theme.colors.readBadge,
+          }}
+        >
           既読
         </div>
       )}
 
-      {/* 右上：ブランドラベル */}
+      {/* ブランド（右上） */}
       {brand && (
         <div
           style={{
@@ -115,9 +153,12 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+
+    // ★ホバー用（重要）
+    transition: "transform 0.18s ease, box-shadow 0.18s ease",
+    cursor: "pointer",
   },
 
-  // 左上（NEW / 既読）
   status: {
     position: "absolute",
     top: 10,
@@ -130,7 +171,6 @@ const styles = {
     color: "#000",
   },
 
-  // 右上（ブランド）
   brand: {
     position: "absolute",
     top: 10,
@@ -156,6 +196,7 @@ const styles = {
 
   emoji: {
     fontSize: 42,
+    transition: "transform 0.2s ease",
   },
 
   body: {
