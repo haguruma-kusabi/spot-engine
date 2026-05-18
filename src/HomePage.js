@@ -22,6 +22,9 @@ export default function HomePage({
   const [sort, setSort] =
     useState("new");
 
+  const [range, setRange] =
+    useState(7);
+
   const [showUnreadOnly, setShowUnreadOnly] =
     useState(false);
 
@@ -240,6 +243,18 @@ export default function HomePage({
       });
     }
 
+    // 期間フィルター
+    const now = new Date();
+
+    list = list.filter((item) => {
+      const diff =
+        (now -
+          new Date(item.date)) /
+        (1000 * 60 * 60 * 24);
+
+      return diff <= range;
+    });
+
     // 未読のみ
     if (showUnreadOnly) {
       list = list.filter(
@@ -272,6 +287,7 @@ export default function HomePage({
     tab,
     filter,
     sort,
+    range,
     showUnreadOnly,
     readItems,
     keyword,
@@ -310,6 +326,8 @@ export default function HomePage({
           setFilter={setFilter}
           sort={sort}
           setSort={setSort}
+          range={range}
+          setRange={setRange}
           showUnreadOnly={
             showUnreadOnly
           }
@@ -339,7 +357,7 @@ export default function HomePage({
         <div
           style={{
             padding:
-              "12px 14px 120px",
+              "12px 14px 140px",
 
             display: "grid",
 
@@ -388,17 +406,17 @@ export default function HomePage({
           width: "100%",
 
           height:
-            "calc(70px + env(safe-area-inset-bottom))",
+            "calc(90px + env(safe-area-inset-bottom))",
+
+          background:
+            theme.colors.background,
+
+          borderTop:
+            "1px solid rgba(255,255,255,0.04)",
 
           pointerEvents: "none",
 
-          background: `linear-gradient(
-            to top,
-            ${theme.colors.background},
-            transparent
-          )`,
-
-          zIndex: 50,
+          zIndex: 40,
         }}
       />
     </div>
