@@ -2,9 +2,6 @@ export default function FilterBar({
   tab,
   setTab,
 
-  filter,
-  setFilter,
-
   range,
   setRange,
 
@@ -18,10 +15,37 @@ export default function FilterBar({
   keyword,
   setKeyword,
 
+  selectedBrands,
+  setSelectedBrands,
+
   theme,
 }) {
+  function toggleBrand(group, value) {
+    setSelectedBrands((prev) => {
+      const next = { ...prev };
+
+      const current = next[group] || [];
+
+      if (value === "all") {
+        next[group] = [];
+        return next;
+      }
+
+      const exists = current.includes(value);
+
+      if (exists) {
+        next[group] = current.filter((b) => b !== value);
+      } else {
+        next[group] = [...current, value];
+      }
+
+      return next;
+    });
+  }
+
   return (
     <div style={styles.wrap}>
+      {/* タブ */}
       <div style={styles.row}>
         <button
           onClick={() => setTab("all")}
@@ -38,6 +62,7 @@ export default function FilterBar({
         </button>
       </div>
 
+      {/* 検索 */}
       <div style={styles.row}>
         <input
           value={keyword}
@@ -51,36 +76,41 @@ export default function FilterBar({
         />
       </div>
 
-      <div style={styles.row}>
-        <button
-          onClick={() => setFilter("all")}
-          style={filterBtn(filter === "all", theme)}
-        >
-          全て
-        </button>
+      {/* コンビニ */}
+      <div style={styles.group}>
+        <div style={styles.groupTitle}>コンビニ</div>
 
-        <button
-          onClick={() => setFilter("convenience")}
-          style={filterBtn(filter === "convenience", theme)}
+        <select
+          onChange={(e) =>
+            toggleBrand("convenience", e.target.value)
+          }
+          style={styles.select}
         >
-          コンビニ
-        </button>
-
-        <button
-          onClick={() => setFilter("cafe")}
-          style={filterBtn(filter === "cafe", theme)}
-        >
-          カフェ
-        </button>
-
-        <button
-          onClick={() => setFilter("other")}
-          style={filterBtn(filter === "other", theme)}
-        >
-          その他
-        </button>
+          <option value="all">全て</option>
+          <option value="セブン">セブン</option>
+          <option value="ファミマ">ファミマ</option>
+          <option value="ローソン">ローソン</option>
+        </select>
       </div>
 
+      {/* カフェ */}
+      <div style={styles.group}>
+        <div style={styles.groupTitle}>カフェ</div>
+
+        <select
+          onChange={(e) =>
+            toggleBrand("cafe", e.target.value)
+          }
+          style={styles.select}
+        >
+          <option value="all">全て</option>
+          <option value="スタバ">スタバ</option>
+          <option value="タリーズ">タリーズ</option>
+          <option value="ドトール">ドトール</option>
+        </select>
+      </div>
+
+      {/* 期間 */}
       <div style={styles.row}>
         <select
           value={range}
@@ -98,6 +128,7 @@ export default function FilterBar({
         </select>
       </div>
 
+      {/* 未読 / リセット */}
       <div style={styles.row}>
         <button
           onClick={() => setShowUnreadOnly(!showUnreadOnly)}
@@ -133,6 +164,16 @@ const styles = {
     marginBottom: 8,
   },
 
+  group: {
+    marginBottom: 10,
+  },
+
+  groupTitle: {
+    fontSize: 12,
+    marginBottom: 4,
+    opacity: 0.8,
+  },
+
   search: {
     width: "100%",
     border: "none",
@@ -143,10 +184,10 @@ const styles = {
   },
 
   select: {
-    flex: 1,
+    width: "100%",
     border: "none",
     borderRadius: 10,
-    padding: 8,
+    padding: 10,
     fontSize: 12,
     outline: "none",
   },
