@@ -1,5 +1,3 @@
-import { GROUPS } from "../lib/brand";
-
 export default function FilterBar({
   theme,
 
@@ -14,17 +12,17 @@ export default function FilterBar({
   range,
   setRange,
 
-  activeGroups,
-  toggleGroup,
+  selectedBrands,
+  setSelectedBrands,
 
-  unreadOnly,
-  setUnreadOnly,
+  showUnreadOnly,
+  setShowUnreadOnly,
 
-  clearRead,
+  resetRead,
 }) {
   return (
     <div style={styles.wrapper}>
-      {/* 上段タブ */}
+      {/* タブ */}
       <div style={styles.row}>
         <button
           onClick={() => setTab("all")}
@@ -41,14 +39,14 @@ export default function FilterBar({
         </button>
 
         <button
-          onClick={() => setUnreadOnly(!unreadOnly)}
-          style={tabBtn(unreadOnly, theme)}
+          onClick={() => setShowUnreadOnly(!showUnreadOnly)}
+          style={tabBtn(showUnreadOnly, theme)}
         >
           未読
         </button>
 
         <button
-          onClick={clearRead}
+          onClick={resetRead}
           style={tabBtn(false, theme)}
         >
           初期化
@@ -84,15 +82,23 @@ export default function FilterBar({
         </select>
       </div>
 
-      {/* ブランドグループ */}
+      {/* ブランドフィルター（完全一致版） */}
       <div style={styles.groupRow}>
-        {Object.keys(GROUPS).map((g) => (
+        {["コンビニ", "カフェ", "その他"].map((group) => (
           <button
-            key={g}
-            onClick={() => toggleGroup(g)}
-            style={filterBtn(activeGroups.includes(g), theme)}
+            key={group}
+            onClick={() =>
+              setSelectedBrands((prev) => ({
+                ...prev,
+                [group.toLowerCase()]: !prev[group.toLowerCase()],
+              }))
+            }
+            style={filterBtn(
+              selectedBrands[group.toLowerCase()],
+              theme
+            )}
           >
-            {g}
+            {group}
           </button>
         ))}
       </div>
@@ -137,7 +143,6 @@ const styles = {
   groupRow: {
     display: "flex",
     gap: 6,
-    flexWrap: "wrap",
   },
 };
 
