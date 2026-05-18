@@ -1,3 +1,9 @@
+export const GROUPS = {
+  コンビニ: ["セブン", "ファミマ", "ローソン"],
+  カフェ: ["スタバ", "タリーズ", "ドトール"],
+  その他: [],
+};
+
 export function detectBrand(title = "") {
   const text = title.toLowerCase();
 
@@ -5,14 +11,13 @@ export function detectBrand(title = "") {
   if (
     text.includes("セブン") ||
     text.includes("セブンイレブン") ||
-    text.includes("7-11") ||
     text.includes("7-eleven") ||
-    text.includes("711")
+    text.includes("7-11")
   ) {
     return {
-      group: "convenience",
+      group: "コンビニ",
       name: "セブン",
-      color: "#f36c21", // オレンジ
+      color: "#f36c21",
     };
   }
 
@@ -20,13 +25,12 @@ export function detectBrand(title = "") {
   if (
     text.includes("ファミマ") ||
     text.includes("ファミリーマート") ||
-    text.includes("familymart") ||
-    text.includes("family mart")
+    text.includes("familymart")
   ) {
     return {
-      group: "convenience",
+      group: "コンビニ",
       name: "ファミマ",
-      color: "#00a652", // 緑
+      color: "#00a652",
     };
   }
 
@@ -36,9 +40,9 @@ export function detectBrand(title = "") {
     text.includes("lawson")
   ) {
     return {
-      group: "convenience",
+      group: "コンビニ",
       name: "ローソン",
-      color: "#005bac", // 青
+      color: "#005bac",
     };
   }
 
@@ -49,22 +53,21 @@ export function detectBrand(title = "") {
     text.includes("starbucks")
   ) {
     return {
-      group: "cafe",
+      group: "カフェ",
       name: "スタバ",
-      color: "#00704a", // 濃い緑
+      color: "#00704a",
     };
   }
 
   // タリーズ
   if (
     text.includes("タリーズ") ||
-    text.includes("tullys") ||
-    text.includes("tully's")
+    text.includes("tullys")
   ) {
     return {
-      group: "cafe",
+      group: "カフェ",
       name: "タリーズ",
-      color: "#000000", // 黒
+      color: "#000000",
     };
   }
 
@@ -74,16 +77,15 @@ export function detectBrand(title = "") {
     text.includes("doutor")
   ) {
     return {
-      group: "cafe",
+      group: "カフェ",
       name: "ドトール",
-      color: "#f2c200", // 黄
+      color: "#f2c200",
     };
   }
 
-  // その他
   return {
-    group: "other",
+    group: "その他",
     name: "その他",
-    color: "#8b3a2f", // 赤茶（無印風）
+    color: "#8b3a2f",
   };
 }
