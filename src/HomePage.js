@@ -285,18 +285,6 @@ export default function HomePage({
         />
       </div>
 
-      {/* スクロール余白固定 */}
-      <div
-        style={{
-          height: 12,
-          background:
-            theme.colors.background,
-          position: "sticky",
-          top: 148,
-          zIndex: 90,
-        }}
-      />
-
       {/* ローディング */}
       {loading ? (
         <div
@@ -310,7 +298,7 @@ export default function HomePage({
         <div
           style={{
             padding:
-              "0 14px 40px",
+              "12px 14px 80px",
 
             display: "grid",
 
