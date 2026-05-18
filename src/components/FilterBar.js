@@ -15,12 +15,15 @@ export default function FilterBar({
 
   count,
 
+  keyword,
+  setKeyword,
+
   theme,
 }) {
   return (
     <div style={styles.wrap}>
       {/* タブ */}
-      <div style={styles.scrollRow}>
+      <div style={styles.row}>
         <button
           onClick={() =>
             setTab("all")
@@ -47,6 +50,28 @@ export default function FilterBar({
         >
           お気に入り
         </button>
+      </div>
+
+      {/* 検索 */}
+      <div style={styles.row}>
+        <input
+          value={keyword}
+          onChange={(e) =>
+            setKeyword(
+              e.target.value
+            )
+          }
+          placeholder="検索"
+          style={{
+            ...styles.search,
+
+            background:
+              theme.colors.inputBg,
+
+            color:
+              theme.colors.inputText,
+          }}
+        />
       </div>
 
       {/* フィルタ */}
@@ -174,6 +199,14 @@ const styles = {
       "0 14px 12px",
   },
 
+  row: {
+    display: "flex",
+
+    gap: 8,
+
+    marginBottom: 8,
+  },
+
   scrollRow: {
     display: "flex",
 
@@ -181,14 +214,23 @@ const styles = {
 
     overflowX: "auto",
 
-    paddingBottom: 6,
+    paddingBottom: 4,
 
-    marginBottom: 6,
+    marginBottom: 8,
+  },
 
-    scrollbarWidth: "none",
+  search: {
+    width: "100%",
 
-    WebkitOverflowScrolling:
-      "touch",
+    border: "none",
+
+    borderRadius: 10,
+
+    padding: 10,
+
+    fontSize: 13,
+
+    outline: "none",
   },
 
   select: {
@@ -226,7 +268,7 @@ const styles = {
 
     opacity: 0.8,
 
-    paddingTop: 2,
+    paddingTop: 4,
   },
 };
 
@@ -234,7 +276,7 @@ const tabBtn = (
   active,
   theme
 ) => ({
-  minWidth: 120,
+  flex: 1,
 
   border: "none",
 
@@ -243,8 +285,6 @@ const tabBtn = (
   padding: 10,
 
   fontSize: 12,
-
-  whiteSpace: "nowrap",
 
   color: "#fff",
 
