@@ -1,4 +1,7 @@
-import { Heart } from "lucide-react";
+import {
+  Heart,
+  ExternalLink,
+} from "lucide-react";
 
 export default function NewsCard({
   item,
@@ -33,6 +36,10 @@ export default function NewsCard({
     return diff <= 3;
   })();
 
+  function handleOpen() {
+    markAsRead(item.link);
+  }
+
   return (
     <div
       style={{
@@ -40,10 +47,23 @@ export default function NewsCard({
 
         background:
           theme.colors.cardBg,
+
+        opacity: isRead
+          ? 0.58
+          : 1,
+
+        filter: isRead
+          ? "saturate(0.7)"
+          : "none",
+
+        transform: isRead
+          ? "scale(0.985)"
+          : "scale(1)",
       }}
+      className="news-card"
     >
       {/* NEW */}
-      {isNew && (
+      {isNew && !isRead && (
         <div
           style={{
             ...styles.newBadge,
@@ -75,9 +95,7 @@ export default function NewsCard({
         href={item.link}
         target="_blank"
         rel="noreferrer"
-        onClick={() =>
-          markAsRead(item.link)
-        }
+        onClick={handleOpen}
         style={styles.imageLink}
       >
         <div
@@ -100,9 +118,7 @@ export default function NewsCard({
           href={item.link}
           target="_blank"
           rel="noreferrer"
-          onClick={() =>
-            markAsRead(item.link)
-          }
+          onClick={handleOpen}
           style={styles.title}
         >
           {item.title}
@@ -118,30 +134,68 @@ export default function NewsCard({
             )}
           </div>
 
-          <button
-            onClick={() =>
-              toggleFav(item)
-            }
-            style={styles.favBtn}
-          >
-            <Heart
-              size={18}
-              fill={
-                isFav
-                  ? theme.colors
-                      .primary
-                  : "transparent"
+          <div style={styles.actions}>
+            <a
+              href={item.link}
+              target="_blank"
+              rel="noreferrer"
+              onClick={handleOpen}
+              style={styles.linkBtn}
+            >
+              <ExternalLink
+                size={16}
+                color="#fff"
+              />
+            </a>
+
+            <button
+              onClick={() =>
+                toggleFav(item)
               }
-              color={
-                isFav
-                  ? theme.colors
-                      .primary
-                  : "#fff"
-              }
-            />
-          </button>
+              style={styles.favBtn}
+            >
+              <Heart
+                size={18}
+                fill={
+                  isFav
+                    ? theme.colors
+                        .primary
+                    : "transparent"
+                }
+                color={
+                  isFav
+                    ? theme.colors
+                        .primary
+                    : "#fff"
+                }
+              />
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* アニメーション */}
+      <style jsx>{`
+        .news-card {
+          transition:
+            transform 0.16s ease,
+            opacity 0.2s ease,
+            filter 0.2s ease,
+            box-shadow 0.18s ease;
+        }
+
+        .news-card:active {
+          transform: scale(0.97);
+        }
+
+        .news-card:hover {
+          transform: translateY(-2px);
+
+          box-shadow:
+            0 10px 24px
+            rgba(0, 0, 0, 0.28);
+        }
+      `}</style>
     </div>
   );
 }
@@ -214,9 +268,17 @@ const styles = {
   date: {
     fontSize: 12,
 
-    opacity: 0.7,
+    opacity: 0.72,
 
     color: "#fff",
+  },
+
+  actions: {
+    display: "flex",
+
+    alignItems: "center",
+
+    gap: 10,
   },
 
   favBtn: {
@@ -227,6 +289,22 @@ const styles = {
     cursor: "pointer",
 
     padding: 0,
+
+    display: "flex",
+
+    alignItems: "center",
+
+    justifyContent: "center",
+  },
+
+  linkBtn: {
+    display: "flex",
+
+    alignItems: "center",
+
+    justifyContent: "center",
+
+    textDecoration: "none",
   },
 
   newBadge: {
@@ -247,14 +325,17 @@ const styles = {
     borderRadius: 999,
 
     color: "#000",
+
+    boxShadow:
+      "0 0 14px rgba(255,255,255,0.18)",
   },
 
   readBadge: {
     position: "absolute",
 
-    top: 42,
+    top: 10,
 
-    left: 10,
+    right: 10,
 
     zIndex: 10,
 
