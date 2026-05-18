@@ -23,9 +23,7 @@ export default function NewsCard({
     theme.emojiSet || ["📰"];
 
   const emoji =
-    emojis[
-      index % emojis.length
-    ];
+    emojis[index % emojis.length];
 
   const isNew = (() => {
     const diff =
@@ -36,40 +34,35 @@ export default function NewsCard({
     return diff <= 3;
   })();
 
-  function handleOpen() {
-    markAsRead(item.link);
-  }
+  const brand = item.brand;
 
   return (
     <div
       style={{
         ...styles.card,
-
-        background:
-          theme.colors.cardBg,
-
-        opacity: isRead
-          ? 0.58
-          : 1,
-
-        filter: isRead
-          ? "saturate(0.7)"
-          : "none",
-
-        transform: isRead
-          ? "scale(0.985)"
-          : "scale(1)",
+        background: theme.colors.cardBg,
+        opacity: isRead ? 0.6 : 1,
+        filter: isRead ? "saturate(0.7)" : "none",
       }}
-      className="news-card"
     >
+      {/* ブランドバッジ */}
+      {brand?.name && (
+        <div
+          style={{
+            ...styles.brandBadge,
+            background: theme.colors.primary,
+          }}
+        >
+          {brand.name}
+        </div>
+      )}
+
       {/* NEW */}
       {isNew && !isRead && (
         <div
           style={{
             ...styles.newBadge,
-
-            background:
-              theme.colors.primary,
+            background: theme.colors.primary,
           }}
         >
           NEW
@@ -81,9 +74,7 @@ export default function NewsCard({
         <div
           style={{
             ...styles.readBadge,
-
-            background:
-              theme.colors.readBadge,
+            background: theme.colors.readBadge,
           }}
         >
           既読
@@ -95,20 +86,16 @@ export default function NewsCard({
         href={item.link}
         target="_blank"
         rel="noreferrer"
-        onClick={handleOpen}
+        onClick={() => markAsRead(item.link)}
         style={styles.imageLink}
       >
         <div
           style={{
             ...styles.imageBox,
-
-            background:
-              theme.colors.skeleton,
+            background: theme.colors.skeleton,
           }}
         >
-          <div style={styles.emoji}>
-            {emoji}
-          </div>
+          <div style={styles.emoji}>{emoji}</div>
         </div>
       </a>
 
@@ -118,84 +105,37 @@ export default function NewsCard({
           href={item.link}
           target="_blank"
           rel="noreferrer"
-          onClick={handleOpen}
+          onClick={() => markAsRead(item.link)}
           style={styles.title}
         >
           {item.title}
         </a>
 
-        {/* 下部 */}
         <div style={styles.footer}>
           <div style={styles.date}>
-            {new Date(
-              item.date
-            ).toLocaleDateString(
-              "ja-JP"
-            )}
+            {new Date(item.date).toLocaleDateString("ja-JP")}
           </div>
 
-          <div style={styles.actions}>
-            <a
-              href={item.link}
-              target="_blank"
-              rel="noreferrer"
-              onClick={handleOpen}
-              style={styles.linkBtn}
-            >
-              <ExternalLink
-                size={16}
-                color="#fff"
-              />
-            </a>
-
-            <button
-              onClick={() =>
-                toggleFav(item)
+          <button
+            onClick={() => toggleFav(item)}
+            style={styles.favBtn}
+          >
+            <Heart
+              size={18}
+              fill={
+                isFav
+                  ? theme.colors.primary
+                  : "transparent"
               }
-              style={styles.favBtn}
-            >
-              <Heart
-                size={18}
-                fill={
-                  isFav
-                    ? theme.colors
-                        .primary
-                    : "transparent"
-                }
-                color={
-                  isFav
-                    ? theme.colors
-                        .primary
-                    : "#fff"
-                }
-              />
-            </button>
-          </div>
+              color={
+                isFav
+                  ? theme.colors.primary
+                  : "#fff"
+              }
+            />
+          </button>
         </div>
       </div>
-
-      {/* アニメーション */}
-      <style jsx>{`
-        .news-card {
-          transition:
-            transform 0.16s ease,
-            opacity 0.2s ease,
-            filter 0.2s ease,
-            box-shadow 0.18s ease;
-        }
-
-        .news-card:active {
-          transform: scale(0.97);
-        }
-
-        .news-card:hover {
-          transform: translateY(-2px);
-
-          box-shadow:
-            0 10px 24px
-            rgba(0, 0, 0, 0.28);
-        }
-      `}</style>
     </div>
   );
 }
@@ -203,17 +143,11 @@ export default function NewsCard({
 const styles = {
   card: {
     position: "relative",
-
     borderRadius: 20,
-
     overflow: "hidden",
-
     display: "flex",
-
     flexDirection: "column",
-
-    boxShadow:
-      "0 4px 14px rgba(0,0,0,0.25)",
+    boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
   },
 
   imageLink: {
@@ -222,11 +156,8 @@ const styles = {
 
   imageBox: {
     height: 120,
-
     display: "flex",
-
     alignItems: "center",
-
     justifyContent: "center",
   },
 
@@ -236,117 +167,66 @@ const styles = {
 
   body: {
     padding: 14,
-
     display: "flex",
-
     flexDirection: "column",
-
     gap: 10,
   },
 
   title: {
     color: "#fff",
-
     textDecoration: "none",
-
     fontSize: 15,
-
-    lineHeight: 1.5,
-
     fontWeight: 700,
+    lineHeight: 1.5,
   },
 
   footer: {
     display: "flex",
-
+    justifyContent: "space-between",
     alignItems: "center",
-
-    justifyContent:
-      "space-between",
   },
 
   date: {
     fontSize: 12,
-
-    opacity: 0.72,
-
-    color: "#fff",
-  },
-
-  actions: {
-    display: "flex",
-
-    alignItems: "center",
-
-    gap: 10,
+    opacity: 0.7,
   },
 
   favBtn: {
     border: "none",
-
     background: "transparent",
-
     cursor: "pointer",
-
-    padding: 0,
-
-    display: "flex",
-
-    alignItems: "center",
-
-    justifyContent: "center",
   },
 
-  linkBtn: {
-    display: "flex",
-
-    alignItems: "center",
-
-    justifyContent: "center",
-
-    textDecoration: "none",
+  brandBadge: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    fontSize: 11,
+    fontWeight: 700,
+    padding: "4px 8px",
+    borderRadius: 999,
+    color: "#000",
   },
 
   newBadge: {
     position: "absolute",
-
     top: 10,
-
     left: 10,
-
-    zIndex: 10,
-
     fontSize: 11,
-
     fontWeight: 700,
-
     padding: "4px 8px",
-
     borderRadius: 999,
-
     color: "#000",
-
-    boxShadow:
-      "0 0 14px rgba(255,255,255,0.18)",
   },
 
   readBadge: {
     position: "absolute",
-
-    top: 10,
-
-    right: 10,
-
-    zIndex: 10,
-
+    top: 38,
+    left: 10,
     fontSize: 11,
-
     fontWeight: 700,
-
     padding: "4px 8px",
-
     borderRadius: 999,
-
     color: "#fff",
   },
 };
