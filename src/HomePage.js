@@ -255,9 +255,6 @@ export default function HomePage({
 
           zIndex: 100,
 
-          backdropFilter:
-            "blur(10px)",
-
           background:
             theme.colors.stickyBg,
         }}
