@@ -292,7 +292,7 @@ export default function HomePage({
           background:
             theme.colors.background,
           position: "sticky",
-          top: 220,
+          top: 148,
           zIndex: 90,
         }}
       />
