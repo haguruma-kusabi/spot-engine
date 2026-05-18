@@ -1,31 +1,26 @@
-import { GROUPS } from "../lib/brand";
-
 export default function FilterBar({
-  theme,
-
   tab,
   setTab,
 
-  favorites,
+  filter,
+  setFilter,
 
-  keyword,
-  setKeyword,
+  sort,
+  setSort,
 
-  range,
-  setRange,
+  showUnreadOnly,
+  setShowUnreadOnly,
 
-  activeGroups,
-  toggleGroup,
+  resetRead,
 
-  unreadOnly,
-  setUnreadOnly,
+  count,
 
-  clearRead,
+  theme,
 }) {
   return (
-    <>
+    <div style={styles.wrap}>
       {/* タブ */}
-      <div style={styles.tabRow}>
+      <div style={styles.row}>
         <button
           onClick={() =>
             setTab("all")
@@ -40,104 +35,111 @@ export default function FilterBar({
 
         <button
           onClick={() =>
-            setTab("fav")
+            setTab(
+              "favorites"
+            )
           }
           style={tabBtn(
-            tab === "fav",
+            tab ===
+              "favorites",
             theme
           )}
         >
-          お気に入り(
-          {favorites.length})
+          お気に入り
         </button>
       </div>
 
-      {/* 検索 */}
-      <div style={styles.searchRow}>
-        <input
-          value={keyword}
-          onChange={(e) =>
-            setKeyword(
-              e.target.value
+      {/* フィルタ */}
+      <div style={styles.row}>
+        <button
+          onClick={() =>
+            setFilter("all")
+          }
+          style={filterBtn(
+            filter === "all",
+            theme
+          )}
+        >
+          全て
+        </button>
+
+        <button
+          onClick={() =>
+            setFilter(
+              "convenience"
             )
           }
-          placeholder="検索"
-          style={{
-            ...styles.search,
-            background:
-              theme.colors.inputBg,
-            color:
-              theme.colors.inputText,
-          }}
-        />
+          style={filterBtn(
+            filter ===
+              "convenience",
+            theme
+          )}
+        >
+          コンビニ
+        </button>
 
+        <button
+          onClick={() =>
+            setFilter("cafe")
+          }
+          style={filterBtn(
+            filter === "cafe",
+            theme
+          )}
+        >
+          カフェ
+        </button>
+
+        <button
+          onClick={() =>
+            setFilter("other")
+          }
+          style={filterBtn(
+            filter ===
+              "other",
+            theme
+          )}
+        >
+          その他
+        </button>
+      </div>
+
+      {/* ユーティリティ */}
+      <div style={styles.row}>
         <select
-          value={range}
+          value={sort}
           onChange={(e) =>
-            setRange(
-              Number(
-                e.target.value
-              )
+            setSort(
+              e.target.value
             )
           }
           style={{
             ...styles.select,
+
             background:
               theme.colors.inputBg,
+
             color:
               theme.colors.inputText,
           }}
         >
-          <option value={3}>
-            3日
+          <option value="new">
+            新しい順
           </option>
 
-          <option value={7}>
-            7日
-          </option>
-
-          <option value={14}>
-            14日
-          </option>
-
-          <option value={30}>
-            30日
+          <option value="old">
+            古い順
           </option>
         </select>
-      </div>
 
-      {/* フィルタ */}
-      <div style={styles.filterRow}>
-        {Object.keys(GROUPS).map(
-          (g) => (
-            <button
-              key={g}
-              onClick={() =>
-                toggleGroup(g)
-              }
-              style={filterBtn(
-                activeGroups.includes(
-                  g
-                ),
-                theme
-              )}
-            >
-              {g}
-            </button>
-          )
-        )}
-      </div>
-
-      {/* ユーティリティ */}
-      <div style={styles.utilityRow}>
         <button
           onClick={() =>
-            setUnreadOnly(
-              !unreadOnly
+            setShowUnreadOnly(
+              !showUnreadOnly
             )
           }
-          style={utilityBtn(
-            unreadOnly,
+          style={filterBtn(
+            showUnreadOnly,
             theme
           )}
         >
@@ -145,77 +147,53 @@ export default function FilterBar({
         </button>
 
         <button
-          onClick={clearRead}
+          onClick={resetRead}
           style={{
             ...styles.resetBtn,
+
             background:
-              theme.colors.readBadge,
+              theme.colors
+                .readBadge,
           }}
         >
           既読リセット
         </button>
       </div>
-    </>
+
+      {/* 件数 */}
+      <div style={styles.count}>
+        {count}件ヒット
+      </div>
+    </div>
   );
 }
 
 const styles = {
-  tabRow: {
-    display: "flex",
-
-    gap: 6,
-
-    marginBottom: 10,
+  wrap: {
+    padding:
+      "0 14px 12px",
   },
 
-  searchRow: {
+  row: {
     display: "flex",
 
-    gap: 6,
+    gap: 8,
 
-    marginBottom: 10,
-  },
-
-  search: {
-    flex: 2,
-
-    padding: 9,
-
-    borderRadius: 10,
-
-    border: "none",
-
-    fontSize: 13,
-
-    outline: "none",
+    marginBottom: 8,
   },
 
   select: {
     flex: 1,
 
+    border: "none",
+
     borderRadius: 10,
 
-    border: "none",
+    padding: 8,
 
     fontSize: 12,
 
     outline: "none",
-  },
-
-  filterRow: {
-    display: "flex",
-
-    gap: 6,
-
-    marginBottom: 10,
-  },
-
-  utilityRow: {
-    display: "flex",
-
-    gap: 6,
-
-    marginBottom: 10,
   },
 
   resetBtn: {
@@ -227,9 +205,17 @@ const styles = {
 
     color: "#fff",
 
-    padding: 8,
-
     fontSize: 12,
+
+    padding: 8,
+  },
+
+  count: {
+    fontSize: 12,
+
+    opacity: 0.8,
+
+    paddingTop: 4,
   },
 };
 
@@ -239,15 +225,15 @@ const tabBtn = (
 ) => ({
   flex: 1,
 
-  padding: 9,
+  border: "none",
 
   borderRadius: 10,
 
-  border: "none",
-
-  color: "#fff",
+  padding: 10,
 
   fontSize: 12,
+
+  color: "#fff",
 
   background: active
     ? theme.colors.primary
@@ -260,36 +246,15 @@ const filterBtn = (
 ) => ({
   flex: 1,
 
-  padding: 8,
+  border: "none",
 
   borderRadius: 10,
 
-  border: "none",
-
-  color: "#fff",
-
-  fontSize: 12,
-
-  background: active
-    ? theme.colors.primary
-    : theme.colors.navInactive,
-});
-
-const utilityBtn = (
-  active,
-  theme
-) => ({
-  flex: 1,
-
   padding: 8,
 
-  borderRadius: 10,
-
-  border: "none",
+  fontSize: 12,
 
   color: "#fff",
-
-  fontSize: 12,
 
   background: active
     ? theme.colors.primary
