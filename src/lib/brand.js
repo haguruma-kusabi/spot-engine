@@ -1,7 +1,7 @@
 export function detectBrand(title = "") {
   const text = title.toLowerCase();
 
-  // ===== コンビニ =====
+  // セブン
   if (
     text.includes("セブン") ||
     text.includes("セブンイレブン") ||
@@ -12,9 +12,11 @@ export function detectBrand(title = "") {
     return {
       group: "convenience",
       name: "セブン",
+      color: "#f36c21", // オレンジ
     };
   }
 
+  // ファミマ
   if (
     text.includes("ファミマ") ||
     text.includes("ファミリーマート") ||
@@ -24,9 +26,11 @@ export function detectBrand(title = "") {
     return {
       group: "convenience",
       name: "ファミマ",
+      color: "#00a652", // 緑
     };
   }
 
+  // ローソン
   if (
     text.includes("ローソン") ||
     text.includes("lawson")
@@ -34,10 +38,11 @@ export function detectBrand(title = "") {
     return {
       group: "convenience",
       name: "ローソン",
+      color: "#005bac", // 青
     };
   }
 
-  // ===== カフェ =====
+  // スタバ
   if (
     text.includes("スタバ") ||
     text.includes("スターバックス") ||
@@ -46,9 +51,11 @@ export function detectBrand(title = "") {
     return {
       group: "cafe",
       name: "スタバ",
+      color: "#00704a", // 濃い緑
     };
   }
 
+  // タリーズ
   if (
     text.includes("タリーズ") ||
     text.includes("tullys") ||
@@ -57,9 +64,11 @@ export function detectBrand(title = "") {
     return {
       group: "cafe",
       name: "タリーズ",
+      color: "#000000", // 黒
     };
   }
 
+  // ドトール
   if (
     text.includes("ドトール") ||
     text.includes("doutor")
@@ -67,19 +76,14 @@ export function detectBrand(title = "") {
     return {
       group: "cafe",
       name: "ドトール",
+      color: "#f2c200", // 黄
     };
   }
 
-  // ===== その他 =====
+  // その他
   return {
     group: "other",
     name: "その他",
+    color: "#8b3a2f", // 赤茶（無印風）
   };
-}
-
-/**
- * 拡張用（将来：複数ブランド同時検出）
- */
-export function detectBrands(title = "") {
-  return [detectBrand(title)];
 }
