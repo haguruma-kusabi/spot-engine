@@ -20,7 +20,7 @@ export default function FilterBar({
   return (
     <div style={styles.wrap}>
       {/* タブ */}
-      <div style={styles.row}>
+      <div style={styles.scrollRow}>
         <button
           onClick={() =>
             setTab("all")
@@ -50,7 +50,7 @@ export default function FilterBar({
       </div>
 
       {/* フィルタ */}
-      <div style={styles.row}>
+      <div style={styles.scrollRow}>
         <button
           onClick={() =>
             setFilter("all")
@@ -105,7 +105,7 @@ export default function FilterBar({
       </div>
 
       {/* ユーティリティ */}
-      <div style={styles.row}>
+      <div style={styles.scrollRow}>
         <select
           value={sort}
           onChange={(e) =>
@@ -174,16 +174,25 @@ const styles = {
       "0 14px 12px",
   },
 
-  row: {
+  scrollRow: {
     display: "flex",
 
     gap: 8,
 
-    marginBottom: 8,
+    overflowX: "auto",
+
+    paddingBottom: 6,
+
+    marginBottom: 6,
+
+    scrollbarWidth: "none",
+
+    WebkitOverflowScrolling:
+      "touch",
   },
 
   select: {
-    flex: 1,
+    minWidth: 120,
 
     border: "none",
 
@@ -197,7 +206,7 @@ const styles = {
   },
 
   resetBtn: {
-    flex: 1,
+    minWidth: 120,
 
     border: "none",
 
@@ -208,6 +217,8 @@ const styles = {
     fontSize: 12,
 
     padding: 8,
+
+    whiteSpace: "nowrap",
   },
 
   count: {
@@ -215,7 +226,7 @@ const styles = {
 
     opacity: 0.8,
 
-    paddingTop: 4,
+    paddingTop: 2,
   },
 };
 
@@ -223,7 +234,7 @@ const tabBtn = (
   active,
   theme
 ) => ({
-  flex: 1,
+  minWidth: 120,
 
   border: "none",
 
@@ -232,6 +243,8 @@ const tabBtn = (
   padding: 10,
 
   fontSize: 12,
+
+  whiteSpace: "nowrap",
 
   color: "#fff",
 
@@ -244,7 +257,7 @@ const filterBtn = (
   active,
   theme
 ) => ({
-  flex: 1,
+  minWidth: 120,
 
   border: "none",
 
@@ -253,6 +266,8 @@ const filterBtn = (
   padding: 8,
 
   fontSize: 12,
+
+  whiteSpace: "nowrap",
 
   color: "#fff",
 
