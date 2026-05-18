@@ -21,26 +21,29 @@ keywords: [
 ],
 
 colors: {
-primary: "#7bcf8f",
+// 和風抹茶
+primary: "#8bcf72",
 
-background: "#08120b",
+// 深緑
+background: "#0b140c",
 
 stickyBg:
-  "rgba(8,18,11,0.92)",
+  "rgba(11,20,12,0.94)",
 
-cardBg: "#102117",
+// 落ち着いた緑
+cardBg: "#17261a",
 
-navInactive: "#223329",
+navInactive: "#2a3d2d",
 
-inputBg: "#12231a",
+inputBg: "#203124",
 
 inputText: "#ffffff",
 
-badgeBg: "#2f5d43",
+badgeBg: "#557c4c",
 
-readBadge: "#5d7c67",
+readBadge: "#6d806f",
 
-skeleton: "#1b2e22",
+skeleton: "#243328",
 
 },
 };
