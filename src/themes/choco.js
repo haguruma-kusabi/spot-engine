@@ -21,26 +21,27 @@ keywords: [
 ],
 
 colors: {
-primary: "#62d2a2",
+// チョコミント感強め
+primary: "#5ee6b3",
 
-background: "#08120f",
+background: "#071612",
 
 stickyBg:
-  "rgba(8,18,15,0.92)",
+  "rgba(7,22,18,0.92)",
 
-cardBg: "#10211d",
+cardBg: "#0f2620",
 
-navInactive: "#23352f",
+navInactive: "#1e3b33",
 
-inputBg: "#11251f",
+inputBg: "#123028",
 
 inputText: "#ffffff",
 
-badgeBg: "#1e3932",
+badgeBg: "#2a6b57",
 
-readBadge: "#5f7b73",
+readBadge: "#567d70",
 
-skeleton: "#1b2f28",
+skeleton: "#16352d",
 
 },
 };
