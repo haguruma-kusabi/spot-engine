@@ -1,46 +1,32 @@
 export const theme = {
   id: "matcha",
 
-  title: "METCHA 🍵 MATCHA",
+  title: "MATCHA 🍵 SPOT",
 
-  emoji: "🍵",
+  rss: [
+    "https://example.com/rss",
+  ],
 
   colors: {
-    background:
-      "linear-gradient(180deg,#0f3d2e,#1f5c45,#3b7a57)",
+    primary: "#7bcf8f",
 
-    primary: "#27ae60",
+    background: "#08120b",
 
-    card: "#f8fff8",
+    stickyBg:
+      "rgba(8,18,11,0.92)",
 
-    cardText: "#132a13",
+    cardBg: "#102117",
 
-    mutedText: "#4f6b4f",
+    navInactive: "#223329",
 
-    badge: "#3cb371",
+    inputBg: "#12231a",
 
-    badgeText: "#ffffff",
+    inputText: "#ffffff",
 
-    readBadge: "#5f7161",
+    badgeBg: "#2f5d43",
 
-    skeleton: "#ffffff22",
+    readBadge: "#5d7c67",
 
-    navInactive: "#2a2f36",
-
-    inputBg: "#ffffff",
-
-    inputText: "#132a13",
-
-    stickyBg: "rgba(0,0,0,0.24)",
+    skeleton: "#1b2e22",
   },
-
-  shadow:
-    "0 6px 16px rgba(0,0,0,0.20)",
-
-  keywords: [
-    "抹茶",
-    "宇治抹茶",
-    "抹茶ラテ",
-    "抹茶スイーツ",
-  ],
 };
