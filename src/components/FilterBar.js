@@ -3,30 +3,31 @@ import { useState } from "react";
 export default function FilterBar({
   tab,
   setTab,
+
   range,
   setRange,
   keyword,
   setKeyword,
+
   showUnreadOnly,
   setShowUnreadOnly,
+
   resetRead,
+
   selectedBrands,
   setSelectedBrands,
-  filterOpen,
-  setFilterOpen,
 }) {
-  const toggle = (group, name) => {
+  const [open, setOpen] = useState({
+    convenience: true,
+    cafe: false,
+  });
+
+  const toggleCheck = (group, name) => {
     setSelectedBrands((prev) => {
       const copy = {
-        ...prev,
         convenience: new Set(prev.convenience),
         cafe: new Set(prev.cafe),
       };
-
-      if (group === "other") {
-        copy.other = !copy.other;
-        return copy;
-      }
 
       const set = copy[group];
       set.has(name) ? set.delete(name) : set.add(name);
@@ -37,41 +38,10 @@ export default function FilterBar({
 
   return (
     <div style={styles.wrapper}>
-      {/* 上段コントロール */}
-      <div style={styles.topRow}>
-        <button style={styles.btn} onClick={() => setTab("all")}>
-          新着
-        </button>
-
-        <button style={styles.btn} onClick={() => setTab("fav")}>
-          ❤️
-        </button>
-
-        <button
-          style={styles.btn}
-          onClick={() => setShowUnreadOnly(!showUnreadOnly)}
-        >
-          未読
-        </button>
-
-        <button style={styles.btn} onClick={resetRead}>
-          初期化
-        </button>
-
-        {/* 折りたたみボタン */}
-        <button
-          style={{
-            ...styles.btn,
-            background: "#555",
-          }}
-          onClick={() => setFilterOpen(!filterOpen)}
-        >
-          {filterOpen ? "閉じる" : "フィルター"}
-        </button>
-      </div>
-
-      {/* 検索 */}
-      <div style={styles.row}>
+      {/* =========================
+          検索 + 期間（上部）
+      ========================= */}
+      <div style={styles.searchRow}>
         <input
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
@@ -91,46 +61,97 @@ export default function FilterBar({
         </select>
       </div>
 
-      {/* フィルター本体（折りたたみ） */}
-      {filterOpen && (
-        <div style={styles.filterArea}>
-          {/* コンビニ */}
-          <div style={styles.group}>
+      {/* =========================
+          タブ（検索の下に移動）
+      ========================= */}
+      <div style={styles.tabRow}>
+        <button onClick={() => setTab("all")} style={styles.tabBtn}>
+          新着
+        </button>
+
+        <button onClick={() => setTab("fav")} style={styles.tabBtn}>
+          ❤️
+        </button>
+
+        <button
+          onClick={() => setShowUnreadOnly((v) => !v)}
+          style={styles.tabBtn}
+        >
+          未読
+        </button>
+
+        <button onClick={resetRead} style={styles.tabBtn}>
+          初期化
+        </button>
+      </div>
+
+      {/* =========================
+          コンビニ（アコーディオン）
+      ========================= */}
+      <div style={styles.group}>
+        <button
+          onClick={() =>
+            setOpen((p) => ({
+              ...p,
+              convenience: !p.convenience,
+            }))
+          }
+          style={styles.groupHeader}
+        >
+          ▼ コンビニ
+        </button>
+
+        {open.convenience && (
+          <div style={styles.checkRow}>
             {["seven", "famima", "lawson"].map((n) => (
-              <button
-                key={n}
-                onClick={() => toggle("convenience", n)}
-                style={styles.tag}
-              >
+              <label key={n} style={styles.checkItem}>
+                <input
+                  type="checkbox"
+                  checked={selectedBrands.convenience.has(n)}
+                  onChange={() =>
+                    toggleCheck("convenience", n)
+                  }
+                />
                 {n}
-              </button>
+              </label>
             ))}
           </div>
+        )}
+      </div>
 
-          {/* カフェ */}
-          <div style={styles.group}>
-            {["starbucks", "tullys", "doutor"].map((n) => (
-              <button
-                key={n}
-                onClick={() => toggle("cafe", n)}
-                style={styles.tag}
-              >
-                {n}
-              </button>
-            ))}
-          </div>
+      {/* =========================
+          カフェ（アコーディオン）
+      ========================= */}
+      <div style={styles.group}>
+        <button
+          onClick={() =>
+            setOpen((p) => ({
+              ...p,
+              cafe: !p.cafe,
+            }))
+          }
+          style={styles.groupHeader}
+        >
+          ▼ カフェ
+        </button>
 
-          {/* その他（独立1行） */}
-          <div style={styles.group}>
-            <button
-              onClick={() => toggle("other", "other")}
-              style={styles.tag}
-            >
-              その他
-            </button>
+        {open.cafe && (
+          <div style={styles.checkRow}>
+            {["starbucks", "tullys", "doutor"].map(
+              (n) => (
+                <label key={n} style={styles.checkItem}>
+                  <input
+                    type="checkbox"
+                    checked={selectedBrands.cafe.has(n)}
+                    onChange={() => toggleCheck("cafe", n)}
+                  />
+                  {n}
+                </label>
+              )
+            )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
@@ -140,30 +161,10 @@ const styles = {
     padding: "6px 12px",
   },
 
-  topRow: {
-    display: "flex",
-    gap: 6,
-    flexWrap: "wrap",
-    marginBottom: 8,
-  },
-
-  row: {
+  searchRow: {
     display: "flex",
     gap: 6,
     marginBottom: 8,
-  },
-
-  filterArea: {
-    marginTop: 6,
-  },
-
-  btn: {
-    padding: "8px 10px",
-    borderRadius: 10,
-    border: "none",
-    background: "#333",
-    color: "#fff",
-    fontSize: 12,
   },
 
   input: {
@@ -179,19 +180,46 @@ const styles = {
     border: "none",
   },
 
-  group: {
+  tabRow: {
     display: "flex",
     gap: 6,
-    flexWrap: "wrap",
-    marginBottom: 6,
+    marginBottom: 10,
   },
 
-  tag: {
-    padding: "6px 10px",
-    borderRadius: 999,
+  tabBtn: {
+    flex: 1,
+    padding: 8,
+    borderRadius: 10,
+    border: "none",
+    background: "#333",
+    color: "#fff",
+    fontSize: 12,
+  },
+
+  group: {
+    marginBottom: 10,
+  },
+
+  groupHeader: {
+    width: "100%",
+    padding: 8,
+    borderRadius: 10,
     border: "none",
     background: "#444",
     color: "#fff",
+    textAlign: "left",
+  },
+
+  checkRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: 6,
+    paddingLeft: 4,
+  },
+
+  checkItem: {
     fontSize: 12,
+    color: "#fff",
   },
 };
