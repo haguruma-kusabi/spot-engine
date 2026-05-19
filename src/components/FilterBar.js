@@ -1,34 +1,12 @@
-import { useState } from "react";
+// FilterBar.js
 
-const CONVENIENCE = [
-  {
-    label: "セブン",
-    value: "seven",
-  },
-  {
-    label: "ファミマ",
-    value: "famima",
-  },
-  {
-    label: "ローソン",
-    value: "lawson",
-  },
-];
+import {
+  BRAND_DICTIONARY,
+} from "../lib/brandDictionary";
 
-const CAFE = [
-  {
-    label: "スタバ",
-    value: "starbucks",
-  },
-  {
-    label: "タリーズ",
-    value: "tullys",
-  },
-  {
-    label: "ドトール",
-    value: "doutor",
-  },
-];
+import {
+  useState,
+} from "react";
 
 export default function FilterBar({
   tab,
@@ -48,70 +26,127 @@ export default function FilterBar({
   selectedBrands,
   setSelectedBrands,
 }) {
-  const [open, setOpen] = useState({
-    convenience: true,
-    cafe: true,
-  });
+  const [openConvenience, setOpenConvenience] =
+    useState(false);
 
-  // =========================
-  // 個別チェック切替
-  // =========================
-  function toggleBrand(group, value) {
+  const [openCafe, setOpenCafe] =
+    useState(false);
+
+  const convenienceBrands =
+    BRAND_DICTIONARY.filter(
+      (b) =>
+        b.group ===
+        "convenience"
+    );
+
+  const cafeBrands =
+    BRAND_DICTIONARY.filter(
+      (b) => b.group === "cafe"
+    );
+
+  function toggleBrand(
+    group,
+    name
+  ) {
     setSelectedBrands((prev) => {
-      const next = {
-        ...prev,
-        [group]: new Set(prev[group]),
-      };
+      const next = new Set(
+        prev[group]
+      );
 
-      if (next[group].has(value)) {
-        next[group].delete(value);
+      if (next.has(name)) {
+        next.delete(name);
       } else {
-        next[group].add(value);
+        next.add(name);
       }
-
-      return next;
-    });
-  }
-
-  // =========================
-  // 一括ON/OFF
-  // =========================
-  function toggleAll(group, list) {
-    setSelectedBrands((prev) => {
-      const current = prev[group];
-
-      const allSelected =
-        current.size === list.length;
 
       return {
         ...prev,
-        [group]: allSelected
-          ? new Set()
-          : new Set(list.map((i) => i.value)),
+        [group]: next,
       };
     });
   }
 
-  // =========================
-  // その他フィルタ
-  // =========================
-  function toggleOther() {
+  function toggleAll(group) {
+    const list =
+      group === "convenience"
+        ? convenienceBrands
+        : cafeBrands;
+
+    const allSelected =
+      list.every((b) =>
+        selectedBrands[group].has(
+          b.name
+        )
+      );
+
     setSelectedBrands((prev) => ({
       ...prev,
-      other: !prev.other,
+
+      [group]: allSelected
+        ? new Set()
+        : new Set(
+            list.map(
+              (b) => b.name
+            )
+          ),
     }));
   }
 
   return (
     <div style={styles.wrapper}>
-      {/* =========================
-          検索 + 期間
-      ========================= */}
+      {/* 上段 */}
+      <div style={styles.topRow}>
+        <button
+          onClick={() =>
+            setTab("all")
+          }
+          style={tabBtn(
+            tab === "all"
+          )}
+        >
+          新着
+        </button>
+
+        <button
+          onClick={() =>
+            setTab("fav")
+          }
+          style={tabBtn(
+            tab === "fav"
+          )}
+        >
+          お気に入り
+        </button>
+
+        <button
+          onClick={() =>
+            setShowUnreadOnly(
+              !showUnreadOnly
+            )
+          }
+          style={tabBtn(
+            showUnreadOnly
+          )}
+        >
+          未読
+        </button>
+
+        <button
+          onClick={resetRead}
+          style={tabBtn(false)}
+        >
+          既読リセット
+        </button>
+      </div>
+
+      {/* 検索 */}
       <div style={styles.searchRow}>
         <input
           value={keyword}
           onChange={(e) =>
-            setKeyword(e.target.value)
+            setKeyword(
+              e.target.value
+            )
           }
           placeholder="検索"
           style={styles.search}
@@ -120,193 +155,208 @@ export default function FilterBar({
         <select
           value={range}
           onChange={(e) =>
-            setRange(Number(e.target.value))
+            setRange(
+              Number(
+                e.target.value
+              )
+            )
           }
           style={styles.select}
         >
-          <option value={3}>3日</option>
-          <option value={7}>7日</option>
-          <option value={14}>14日</option>
-          <option value={30}>30日</option>
+          <option value={3}>
+            3日
+          </option>
+
+          <option value={7}>
+            7日
+          </option>
+
+          <option value={14}>
+            14日
+          </option>
+
+          <option value={30}>
+            30日
+          </option>
         </select>
       </div>
 
-      {/* =========================
-          タブ
-      ========================= */}
-      <div style={styles.tabRow}>
-        <button
-          onClick={() => setTab("all")}
-          style={styles.tabBtn}
-        >
-          新着
-        </button>
-
-        <button
-          onClick={() => setTab("fav")}
-          style={styles.tabBtn}
-        >
-          ❤️
-        </button>
-
-        <button
-          onClick={() =>
-            setShowUnreadOnly((v) => !v)
-          }
-          style={{
-            ...styles.tabBtn,
-            background: showUnreadOnly
-              ? "#00c896"
-              : "#333",
-          }}
-        >
-          未読
-        </button>
-
-        <button
-          onClick={resetRead}
-          style={styles.tabBtn}
-        >
-          初期化
-        </button>
-      </div>
-
-      {/* =========================
-          ブランドフィルタ
-      ========================= */}
-      <div style={styles.brandGrid}>
-        {/* =========================
-            コンビニ
-        ========================= */}
-        <div style={styles.groupCard}>
+      {/* ブランド */}
+      <div style={styles.brandRow}>
+        {/* コンビニ */}
+        <div style={styles.groupBox}>
           <button
             onClick={() =>
-              setOpen((prev) => ({
-                ...prev,
-                convenience:
-                  !prev.convenience,
-              }))
+              setOpenConvenience(
+                !openConvenience
+              )
             }
-            style={styles.groupHeader}
+            style={styles.groupBtn}
           >
             コンビニ ▼
           </button>
 
-          {open.convenience && (
-            <div style={styles.checkArea}>
-              {/* 一括 */}
-              <label style={styles.checkLabel}>
-                <input
-                  type="checkbox"
-                  checked={
-                    selectedBrands.convenience
-                      .size ===
-                    CONVENIENCE.length
-                  }
-                  onChange={() =>
-                    toggleAll(
-                      "convenience",
-                      CONVENIENCE
-                    )
-                  }
-                />
-                すべて
-              </label>
+          <div
+            style={{
+              ...styles.dropdown,
 
-              {/* 個別 */}
-              {CONVENIENCE.map((brand) => (
+              maxHeight:
+                openConvenience
+                  ? 220
+                  : 0,
+
+              opacity:
+                openConvenience
+                  ? 1
+                  : 0,
+            }}
+          >
+            <label
+              style={styles.check}
+            >
+              <input
+                type="checkbox"
+                checked={convenienceBrands.every(
+                  (b) =>
+                    selectedBrands.convenience.has(
+                      b.name
+                    )
+                )}
+                onChange={() =>
+                  toggleAll(
+                    "convenience"
+                  )
+                }
+              />
+
+              すべて
+            </label>
+
+            {convenienceBrands.map(
+              (brand) => (
                 <label
-                  key={brand.value}
-                  style={styles.checkLabel}
+                  key={brand.name}
+                  style={
+                    styles.check
+                  }
                 >
                   <input
                     type="checkbox"
                     checked={selectedBrands.convenience.has(
-                      brand.value
+                      brand.name
                     )}
                     onChange={() =>
                       toggleBrand(
                         "convenience",
-                        brand.value
+                        brand.name
                       )
                     }
                   />
+
                   {brand.label}
                 </label>
-              ))}
-            </div>
-          )}
+              )
+            )}
+          </div>
         </div>
 
-        {/* =========================
-            カフェ
-        ========================= */}
-        <div style={styles.groupCard}>
+        {/* カフェ */}
+        <div style={styles.groupBox}>
           <button
             onClick={() =>
-              setOpen((prev) => ({
-                ...prev,
-                cafe: !prev.cafe,
-              }))
+              setOpenCafe(
+                !openCafe
+              )
             }
-            style={styles.groupHeader}
+            style={styles.groupBtn}
           >
             カフェ ▼
           </button>
 
-          {open.cafe && (
-            <div style={styles.checkArea}>
-              {/* 一括 */}
-              <label style={styles.checkLabel}>
-                <input
-                  type="checkbox"
-                  checked={
-                    selectedBrands.cafe.size ===
-                    CAFE.length
-                  }
-                  onChange={() =>
-                    toggleAll("cafe", CAFE)
-                  }
-                />
-                すべて
-              </label>
+          <div
+            style={{
+              ...styles.dropdown,
 
-              {/* 個別 */}
-              {CAFE.map((brand) => (
+              maxHeight:
+                openCafe
+                  ? 220
+                  : 0,
+
+              opacity:
+                openCafe
+                  ? 1
+                  : 0,
+            }}
+          >
+            <label
+              style={styles.check}
+            >
+              <input
+                type="checkbox"
+                checked={cafeBrands.every(
+                  (b) =>
+                    selectedBrands.cafe.has(
+                      b.name
+                    )
+                )}
+                onChange={() =>
+                  toggleAll("cafe")
+                }
+              />
+
+              すべて
+            </label>
+
+            {cafeBrands.map(
+              (brand) => (
                 <label
-                  key={brand.value}
-                  style={styles.checkLabel}
+                  key={brand.name}
+                  style={
+                    styles.check
+                  }
                 >
                   <input
                     type="checkbox"
                     checked={selectedBrands.cafe.has(
-                      brand.value
+                      brand.name
                     )}
                     onChange={() =>
                       toggleBrand(
                         "cafe",
-                        brand.value
+                        brand.name
                       )
                     }
                   />
+
                   {brand.label}
                 </label>
-              ))}
-            </div>
-          )}
+              )
+            )}
+          </div>
         </div>
       </div>
 
-      {/* =========================
-          その他
-      ========================= */}
+      {/* その他 */}
       <div style={styles.otherRow}>
-        <label style={styles.otherLabel}>
+        <label
+          style={styles.otherCheck}
+        >
           <input
             type="checkbox"
-            checked={selectedBrands.other}
-            onChange={toggleOther}
+            checked={
+              selectedBrands.other
+            }
+            onChange={() =>
+              setSelectedBrands(
+                (prev) => ({
+                  ...prev,
+                  other:
+                    !prev.other,
+                })
+              )
+            }
           />
+
           その他
         </label>
       </div>
@@ -316,118 +366,108 @@ export default function FilterBar({
 
 const styles = {
   wrapper: {
-    padding: "8px 12px 12px",
+    padding: "10px 12px",
   },
 
-  // =========================
-  // 検索
-  // =========================
-  searchRow: {
+  topRow: {
     display: "flex",
     gap: 8,
     marginBottom: 10,
+    flexWrap: "wrap",
   },
 
-  search: {
-    flex: 2,
-    padding: 10,
-    borderRadius: 12,
-    border: "none",
-    outline: "none",
-    fontSize: 13,
-    background: "#222",
-    color: "#fff",
-  },
-
-  select: {
-    flex: 1,
-    borderRadius: 12,
-    border: "none",
-    outline: "none",
-    background: "#222",
-    color: "#fff",
-    padding: 10,
-  },
-
-  // =========================
-  // タブ
-  // =========================
-  tabRow: {
+  searchRow: {
     display: "flex",
     gap: 8,
     marginBottom: 12,
   },
 
-  tabBtn: {
+  search: {
     flex: 1,
-    padding: 9,
     borderRadius: 12,
     border: "none",
-    background: "#333",
+    padding:
+      "10px 12px",
+    fontSize: 14,
+    outline: "none",
+    background: "#1e1e1e",
     color: "#fff",
-    fontSize: 12,
-    fontWeight: 700,
   },
 
-  // =========================
-  // ブランドグリッド
-  // =========================
-  brandGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
+  select: {
+    borderRadius: 12,
+    border: "none",
+    padding:
+      "10px 12px",
+    background: "#1e1e1e",
+    color: "#fff",
+  },
+
+  brandRow: {
+    display: "flex",
     gap: 10,
     marginBottom: 10,
   },
 
-  groupCard: {
-    background: "rgba(255,255,255,0.05)",
-    borderRadius: 14,
-    padding: 8,
+  groupBox: {
+    flex: 1,
   },
 
-  groupHeader: {
+  groupBtn: {
     width: "100%",
     border: "none",
-    background: "#444",
+    borderRadius: 12,
+    padding:
+      "10px 12px",
+    background: "#2b2b2b",
     color: "#fff",
-    borderRadius: 10,
-    padding: 9,
     fontWeight: 700,
-    textAlign: "left",
-    marginBottom: 8,
+    cursor: "pointer",
   },
 
-  // =========================
-  // チェックエリア
-  // =========================
-  checkArea: {
+  dropdown: {
+    overflow: "hidden",
+    transition:
+      "all 0.25s ease",
+    background: "#181818",
+    borderRadius: 12,
+    marginTop: 6,
+    padding:
+      "0 10px",
+  },
+
+  check: {
     display: "flex",
-    flexDirection: "column",
+    alignItems: "center",
     gap: 8,
-    paddingLeft: 2,
-  },
-
-  checkLabel: {
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    fontSize: 13,
-    color: "#f1f1f1",
-  },
-
-  // =========================
-  // その他
-  // =========================
-  otherRow: {
-    marginTop: 2,
-    paddingLeft: 4,
-  },
-
-  otherLabel: {
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    fontSize: 13,
+    padding:
+      "8px 0",
     color: "#fff",
+    fontSize: 14,
+  },
+
+  otherRow: {
+    marginTop: 8,
+  },
+
+  otherCheck: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    color: "#fff",
+    fontSize: 14,
   },
 };
+
+const tabBtn = (active) => ({
+  border: "none",
+  borderRadius: 12,
+  padding:
+    "10px 12px",
+  background: active
+    ? "#4d7cff"
+    : "#2b2b2b",
+  color: "#fff",
+  cursor: "pointer",
+  fontWeight: 700,
+});
