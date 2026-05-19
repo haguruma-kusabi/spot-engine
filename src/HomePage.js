@@ -18,7 +18,6 @@ export default function HomePage({ theme }) {
   const [favorites, setFavorites] = useState([]);
   const [readItems, setReadItems] = useState([]);
 
-  // ★正しいチェックボックス状態
   const [selectedBrands, setSelectedBrands] = useState({
     convenience: new Set(),
     cafe: new Set(),
@@ -79,7 +78,6 @@ export default function HomePage({ theme }) {
       );
     }
 
-    // ★ブランドフィルター（完全一致OR）
     const hasFilter =
       selectedBrands.convenience.size > 0 ||
       selectedBrands.cafe.size > 0;
@@ -89,7 +87,7 @@ export default function HomePage({ theme }) {
         const b = item.brand;
         if (!b) return false;
 
-        const inConvenience =
+        const inConv =
           b.group === "convenience" &&
           selectedBrands.convenience.has(b.name);
 
@@ -97,7 +95,7 @@ export default function HomePage({ theme }) {
           b.group === "cafe" &&
           selectedBrands.cafe.has(b.name);
 
-        return inConvenience || inCafe;
+        return inConv || inCafe;
       });
     }
 
@@ -134,17 +132,21 @@ export default function HomePage({ theme }) {
   ]);
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: theme.colors.background,
-      color: "#fff",
-    }}>
-      <div style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-        background: theme.colors.stickyBg,
-      }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: theme.colors.background,
+        color: "#fff",
+      }}
+    >
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+          background: theme.colors.stickyBg,
+        }}
+      >
         <Header theme={theme} />
 
         <FilterBar
@@ -163,13 +165,15 @@ export default function HomePage({ theme }) {
         />
       </div>
 
-      <div style={{
-        padding: "12px 14px 120px",
-        display: "grid",
-        gridTemplateColumns:
-          "repeat(auto-fill,minmax(220px,1fr))",
-        gap: 16,
-      }}>
+      <div
+        style={{
+          padding: "12px 14px 120px",
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fill,minmax(220px,1fr))",
+          gap: 16,
+        }}
+      >
         {filteredItems.map((item, i) => (
           <NewsCard
             key={item.link || i}
@@ -184,15 +188,17 @@ export default function HomePage({ theme }) {
         ))}
       </div>
 
-      <div style={{
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        width: "100%",
-        height: 80,
-        background: theme.colors.background,
-        pointerEvents: "none",
-      }} />
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          height: 80,
+          background: theme.colors.background,
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 }
