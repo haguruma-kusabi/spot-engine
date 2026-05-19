@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useState } from "react";
 
 export default function FilterBar({
   tab,
@@ -12,9 +12,10 @@ export default function FilterBar({
   resetRead,
   selectedBrands,
   setSelectedBrands,
-  theme,
+  filterOpen,
+  setFilterOpen,
 }) {
-  const toggleBrand = (group, name) => {
+  const toggle = (group, name) => {
     setSelectedBrands((prev) => {
       const copy = {
         ...prev,
@@ -23,17 +24,12 @@ export default function FilterBar({
       };
 
       if (group === "other") {
-        copy.other = !prev.other;
+        copy.other = !copy.other;
         return copy;
       }
 
       const set = copy[group];
-
-      if (set.has(name)) {
-        set.delete(name);
-      } else {
-        set.add(name);
-      }
+      set.has(name) ? set.delete(name) : set.add(name);
 
       return copy;
     });
@@ -41,29 +37,40 @@ export default function FilterBar({
 
   return (
     <div style={styles.wrapper}>
-      {/* 上段タブ */}
-      <div style={styles.row}>
-        <button onClick={() => setTab("all")} style={styles.btn}>
+      {/* 上段コントロール */}
+      <div style={styles.topRow}>
+        <button style={styles.btn} onClick={() => setTab("all")}>
           新着
         </button>
 
-        <button onClick={() => setTab("fav")} style={styles.btn}>
+        <button style={styles.btn} onClick={() => setTab("fav")}>
           ❤️
         </button>
 
         <button
-          onClick={() => setShowUnreadOnly(!showUnreadOnly)}
           style={styles.btn}
+          onClick={() => setShowUnreadOnly(!showUnreadOnly)}
         >
           未読
         </button>
 
-        <button onClick={resetRead} style={styles.btn}>
+        <button style={styles.btn} onClick={resetRead}>
           初期化
+        </button>
+
+        {/* 折りたたみボタン */}
+        <button
+          style={{
+            ...styles.btn,
+            background: "#555",
+          }}
+          onClick={() => setFilterOpen(!filterOpen)}
+        >
+          {filterOpen ? "閉じる" : "フィルター"}
         </button>
       </div>
 
-      {/* 検索・期間 */}
+      {/* 検索 */}
       <div style={styles.row}>
         <input
           value={keyword}
@@ -84,47 +91,61 @@ export default function FilterBar({
         </select>
       </div>
 
-      {/* コンビニ */}
-      <div style={styles.groupRow}>
-        {["seven", "famima", "lawson"].map((name) => (
-          <button
-            key={name}
-            onClick={() => toggleBrand("convenience", name)}
-            style={styles.tag}
-          >
-            {name}
-          </button>
-        ))}
-      </div>
+      {/* フィルター本体（折りたたみ） */}
+      {filterOpen && (
+        <div style={styles.filterArea}>
+          {/* コンビニ */}
+          <div style={styles.group}>
+            {["seven", "famima", "lawson"].map((n) => (
+              <button
+                key={n}
+                onClick={() => toggle("convenience", n)}
+                style={styles.tag}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
 
-      {/* カフェ */}
-      <div style={styles.groupRow}>
-        {["starbucks", "tullys", "doutor"].map((name) => (
-          <button
-            key={name}
-            onClick={() => toggleBrand("cafe", name)}
-            style={styles.tag}
-          >
-            {name}
-          </button>
-        ))}
-      </div>
+          {/* カフェ */}
+          <div style={styles.group}>
+            {["starbucks", "tullys", "doutor"].map((n) => (
+              <button
+                key={n}
+                onClick={() => toggle("cafe", n)}
+                style={styles.tag}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
 
-      {/* その他 */}
-      <div style={styles.groupRow}>
-        <button
-          onClick={() => toggleBrand("other", "other")}
-          style={styles.tag}
-        >
-          その他
-        </button>
-      </div>
+          {/* その他（独立1行） */}
+          <div style={styles.group}>
+            <button
+              onClick={() => toggle("other", "other")}
+              style={styles.tag}
+            >
+              その他
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 const styles = {
-  wrapper: { padding: "6px 12px" },
+  wrapper: {
+    padding: "6px 12px",
+  },
+
+  topRow: {
+    display: "flex",
+    gap: 6,
+    flexWrap: "wrap",
+    marginBottom: 8,
+  },
 
   row: {
     display: "flex",
@@ -132,9 +153,12 @@ const styles = {
     marginBottom: 8,
   },
 
+  filterArea: {
+    marginTop: 6,
+  },
+
   btn: {
-    flex: 1,
-    padding: 8,
+    padding: "8px 10px",
     borderRadius: 10,
     border: "none",
     background: "#333",
@@ -155,7 +179,7 @@ const styles = {
     border: "none",
   },
 
-  groupRow: {
+  group: {
     display: "flex",
     gap: 6,
     flexWrap: "wrap",
