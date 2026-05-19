@@ -4,7 +4,6 @@ import Header from "./components/Header";
 import FilterBar from "./components/FilterBar";
 import NewsCard from "./components/NewsCard";
 
-/* ✅ 正しいimport */
 import { detectBrand } from "./lib/detectBrand";
 
 export default function HomePage({ theme }) {
@@ -28,6 +27,10 @@ export default function HomePage({ theme }) {
       cafe: new Set(),
       other: false,
     });
+
+  // =========================
+  // ニュース取得
+  // =========================
 
   useEffect(() => {
     fetchNews();
@@ -61,6 +64,7 @@ export default function HomePage({ theme }) {
   // =========================
   // お気に入り
   // =========================
+
   function toggleFav(item) {
     setFavorites((prev) => {
       const exists = prev.some(
@@ -78,6 +82,7 @@ export default function HomePage({ theme }) {
   // =========================
   // 既読
   // =========================
+
   function markAsRead(link) {
     setReadItems((prev) =>
       prev.includes(link)
@@ -93,15 +98,22 @@ export default function HomePage({ theme }) {
   // =========================
   // フィルター
   // =========================
+
   const filteredItems = useMemo(() => {
     let list = [...items];
 
+    // =========================
     // タブ
+    // =========================
+
     if (tab === "fav") {
       list = favorites;
     }
 
-    // キーワード
+    // =========================
+    // キーワード検索
+    // =========================
+
     if (keyword.trim()) {
       const k = keyword.toLowerCase();
 
@@ -112,7 +124,10 @@ export default function HomePage({ theme }) {
       );
     }
 
-    // ブランド
+    // =========================
+    // ブランドフィルター
+    // =========================
+
     const hasFilter =
       selectedBrands.convenience.size > 0 ||
       selectedBrands.cafe.size > 0 ||
@@ -122,17 +137,24 @@ export default function HomePage({ theme }) {
       list = list.filter((item) => {
         const b = item.brand;
 
+        // =========================
         // その他
+        // =========================
+
         if (
           selectedBrands.other &&
-          !b
+          (!b || b.group === "other")
         ) {
           return true;
         }
 
+        // brandなし
         if (!b) return false;
 
+        // =========================
         // コンビニ
+        // =========================
+
         if (
           b.group === "convenience" &&
           selectedBrands.convenience.has(
@@ -142,7 +164,10 @@ export default function HomePage({ theme }) {
           return true;
         }
 
+        // =========================
         // カフェ
+        // =========================
+
         if (
           b.group === "cafe" &&
           selectedBrands.cafe.has(
@@ -156,7 +181,10 @@ export default function HomePage({ theme }) {
       });
     }
 
+    // =========================
     // 期間
+    // =========================
+
     const now = new Date();
 
     list = list.filter((item) => {
@@ -168,7 +196,10 @@ export default function HomePage({ theme }) {
       return diff <= range;
     });
 
-    // 未読
+    // =========================
+    // 未読のみ
+    // =========================
+
     if (showUnreadOnly) {
       list = list.filter(
         (i) =>
@@ -176,7 +207,10 @@ export default function HomePage({ theme }) {
       );
     }
 
-    // ソート
+    // =========================
+    // 新しい順
+    // =========================
+
     return list.sort(
       (a, b) =>
         new Date(b.date) -
@@ -196,6 +230,7 @@ export default function HomePage({ theme }) {
   // =========================
   // 今日件数
   // =========================
+
   const todayCount = items.filter(
     (item) => {
       const d = new Date(item.date);
@@ -225,6 +260,7 @@ export default function HomePage({ theme }) {
       {/* =========================
           Header
       ========================= */}
+
       <div
         style={{
           position: "sticky",
@@ -250,6 +286,7 @@ export default function HomePage({ theme }) {
         {/* =========================
             Filter
         ========================= */}
+
         <FilterBar
           tab={tab}
           setTab={setTab}
@@ -276,6 +313,7 @@ export default function HomePage({ theme }) {
       {/* =========================
           News Grid
       ========================= */}
+
       <div
         style={{
           padding:
@@ -304,7 +342,10 @@ export default function HomePage({ theme }) {
         )}
       </div>
 
-      {/* 下余白 */}
+      {/* =========================
+          下余白
+      ========================= */}
+
       <div
         style={{
           position: "fixed",
