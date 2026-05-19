@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { themes } from "../themes";
 
 export default function Header({
@@ -8,13 +8,27 @@ export default function Header({
   lastUpdated,
 }) {
   const [open, setOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(e.target)
+      ) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("click", handleClick);
+    return () =>
+      document.removeEventListener("click", handleClick);
+  }, []);
 
   return (
     <div style={styles.wrapper}>
-      {/* 上段 */}
       <div style={styles.topRow}>
-        {/* ハンバーガー（サイト遷移） */}
-        <div style={styles.menuArea}>
+        <div ref={menuRef} style={styles.menuArea}>
           <button
             onClick={() => setOpen(!open)}
             style={styles.menuBtn}
@@ -37,17 +51,11 @@ export default function Header({
           )}
         </div>
 
-        {/* タイトル */}
-        <div style={styles.title}>
-          {theme.title}
-        </div>
+        <div style={styles.title}>{theme.title}</div>
 
         <div style={{ width: 40 }} />
       </div>
 
-      {/* SeriesNav → 完全削除 */}
-
-      {/* 情報 */}
       <div style={styles.infoRow}>
         <span>{filteredCount}件ヒット</span>
         <span>今日 {todayCount}件</span>
@@ -61,28 +69,22 @@ export default function Header({
 }
 
 const styles = {
-  wrapper: {
-    paddingTop: 8,
-  },
+  wrapper: { paddingTop: 8 },
 
   topRow: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     padding: "0 12px",
-    marginBottom: 8,
   },
 
-  menuArea: {
-    position: "relative",
-  },
+  menuArea: { position: "relative" },
 
   menuBtn: {
     fontSize: 22,
     background: "transparent",
     border: "none",
     color: "#fff",
-    cursor: "pointer",
   },
 
   dropdown: {
@@ -92,7 +94,6 @@ const styles = {
     background: "#111",
     borderRadius: 10,
     padding: 6,
-    zIndex: 999,
     minWidth: 140,
   },
 
@@ -109,22 +110,19 @@ const styles = {
     textAlign: "center",
     fontSize: 20,
     fontWeight: "bold",
-    color: "#fff",
   },
 
   infoRow: {
     display: "flex",
     justifyContent: "space-between",
     fontSize: 12,
-    color: "#d7e0e5",
-    marginBottom: 4,
     padding: "0 12px",
+    color: "#d7e0e5",
   },
 
   updateText: {
     fontSize: 11,
-    color: "#cfe7d3",
-    marginBottom: 6,
     padding: "0 12px",
+    color: "#cfe7d3",
   },
 };
