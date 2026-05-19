@@ -4,39 +4,24 @@ export const BRAND_DICTIONARY = [
   // =================
   {
     group: "convenience",
-    name: "セブン",
-    color: "#f15a24",
-    keywords: [
-      "セブン",
-      "セブンイレブン",
-      "セブン-イレブン",
-      "7-ELEVEN",
-      "7-Eleven",
-      "7 eleven",
-      "seven eleven",
-    ],
+    name: "seven",
+    label: "セブン",
+    color: "#f36c21",
+    keywords: ["セブン", "seven", "7-eleven", "7eleven"],
   },
   {
     group: "convenience",
-    name: "ファミマ",
-    color: "#00a040",
-    keywords: [
-      "ファミマ",
-      "ファミリーマート",
-      "FamilyMart",
-      "familymart",
-      "family mart",
-    ],
+    name: "famima",
+    label: "ファミマ",
+    color: "#2bb673",
+    keywords: ["ファミマ", "familymart", "famima"],
   },
   {
     group: "convenience",
-    name: "ローソン",
-    color: "#005bac",
-    keywords: [
-      "ローソン",
-      "LAWSON",
-      "lawson",
-    ],
+    name: "lawson",
+    label: "ローソン",
+    color: "#1e5aa8",
+    keywords: ["ローソン", "lawson"],
   },
 
   // =================
@@ -44,35 +29,23 @@ export const BRAND_DICTIONARY = [
   // =================
   {
     group: "cafe",
-    name: "スタバ",
+    name: "starbucks",
+    label: "スタバ",
     color: "#006241",
-    keywords: [
-      "スタバ",
-      "スターバックス",
-      "Starbucks",
-      "starbucks",
-    ],
+    keywords: ["スタバ", "starbucks"],
   },
   {
     group: "cafe",
-    name: "タリーズ",
+    name: "tullys",
+    label: "タリーズ",
     color: "#000000",
-    keywords: [
-      "タリーズ",
-      "TULLY'S",
-      "Tully's",
-      "tullys",
-    ],
+    keywords: ["タリーズ", "tullys"],
   },
   {
     group: "cafe",
-    name: "ドトール",
+    name: "doutor",
+    label: "ドトール",
     color: "#f2c200",
-    keywords: [
-      "ドトール",
-      "DOUTOR",
-      "Doutor",
-      "doutor",
-    ],
+    keywords: ["ドトール", "doutor"],
   },
 ];
