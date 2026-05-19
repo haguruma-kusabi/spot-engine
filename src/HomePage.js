@@ -67,9 +67,7 @@ export default function HomePage({ theme }) {
   const filteredItems = useMemo(() => {
     let list = [...items];
 
-    if (tab === "favorites") {
-      list = favorites;
-    }
+    if (tab === "favorites") list = favorites;
 
     if (keyword.trim()) {
       const k = keyword.toLowerCase();
@@ -129,21 +127,17 @@ export default function HomePage({ theme }) {
   ]);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: theme.colors.background,
-        color: "#fff",
-      }}
-    >
-      <div
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 100,
-          background: theme.colors.stickyBg,
-        }}
-      >
+    <div style={{
+      minHeight: "100vh",
+      background: theme.colors.background,
+      color: "#fff",
+    }}>
+      <div style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 100,
+        background: theme.colors.stickyBg,
+      }}>
         <Header theme={theme} />
 
         <FilterBar
@@ -162,15 +156,13 @@ export default function HomePage({ theme }) {
         />
       </div>
 
-      <div
-        style={{
-          padding: "12px 14px 120px",
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(auto-fill,minmax(220px,1fr))",
-          gap: 16,
-        }}
-      >
+      <div style={{
+        padding: "12px 14px 120px",
+        display: "grid",
+        gridTemplateColumns:
+          "repeat(auto-fill,minmax(220px,1fr))",
+        gap: 16,
+      }}>
         {filteredItems.map((item, i) => (
           <NewsCard
             key={item.link || i}
@@ -185,17 +177,15 @@ export default function HomePage({ theme }) {
         ))}
       </div>
 
-      <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          width: "100%",
-          height: 80,
-          background: theme.colors.background,
-          pointerEvents: "none",
-        }}
-      />
+      <div style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        width: "100%",
+        height: 80,
+        background: theme.colors.background,
+        pointerEvents: "none",
+      }} />
     </div>
   );
 }
