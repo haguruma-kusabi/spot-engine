@@ -5,7 +5,7 @@ import FilterBar from "./components/FilterBar";
 import NewsCard from "./components/NewsCard";
 
 /* ✅ 正しいimport */
-import { detectBrand } from "./lib/brand";
+import { detectBrand } from "./lib/detectBrand";
 
 export default function HomePage({ theme }) {
   const [items, setItems] = useState([]);
