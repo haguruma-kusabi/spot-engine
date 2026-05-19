@@ -20,6 +20,7 @@ export default function HomePage({ theme }) {
   const [selectedBrands, setSelectedBrands] = useState({
     convenience: new Set(),
     cafe: new Set(),
+    other: false,
   });
 
   useEffect(() => {
@@ -71,12 +72,21 @@ export default function HomePage({ theme }) {
 
     const hasFilter =
       selectedBrands.convenience.size > 0 ||
-      selectedBrands.cafe.size > 0;
+      selectedBrands.cafe.size > 0 ||
+      selectedBrands.other;
 
     if (hasFilter) {
       list = list.filter((item) => {
         const b = item.brand;
+        if (!b && selectedBrands.other) return true;
         if (!b) return false;
+
+        if (selectedBrands.other) {
+          if (
+            b.group !== "convenience" &&
+            b.group !== "cafe"
+          ) return true;
+        }
 
         return (
           (b.group === "convenience" &&
@@ -93,6 +103,7 @@ export default function HomePage({ theme }) {
       const diff =
         (now - new Date(item.date)) /
         (1000 * 60 * 60 * 24);
+
       return diff <= range;
     });
 
@@ -117,6 +128,16 @@ export default function HomePage({ theme }) {
     selectedBrands,
   ]);
 
+  const todayCount = useMemo(() => {
+    const now = new Date();
+    return items.filter((item) => {
+      const diff =
+        (now - new Date(item.date)) /
+        (1000 * 60 * 60 * 24);
+      return diff <= 1;
+    }).length;
+  }, [items]);
+
   return (
     <div style={{
       minHeight: "100vh",
@@ -129,7 +150,16 @@ export default function HomePage({ theme }) {
         zIndex: 100,
         background: theme.colors.stickyBg,
       }}>
-        <Header theme={theme} />
+        <Header
+          theme={theme}
+          filteredCount={filteredItems.length}
+          todayCount={todayCount}
+          lastUpdated={
+            items[0]?.date
+              ? new Date(items[0].date).toLocaleString("ja-JP")
+              : "-"
+          }
+        />
 
         <FilterBar
           tab={tab}
