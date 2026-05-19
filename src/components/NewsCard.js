@@ -18,20 +18,15 @@ export default function NewsCard({
     setMounted(true);
   }, []);
 
-  const isFav = favorites.some(
-    (f) => f.link === item.link
-  );
-
+  const isFav = favorites.some((f) => f.link === item.link);
   const isRead = readItems.includes(item.link);
 
-  const isNew = (() => {
-    const diff =
-      (new Date() - new Date(item.date)) /
-      (1000 * 60 * 60 * 24);
-    return diff <= 3;
-  })();
+  const isNew =
+    (new Date() - new Date(item.date)) /
+      (1000 * 60 * 60 * 24) <= 3;
 
-  const emoji = ["📰", "🔥", "✨", "📢"][index % 4];
+  const emojiSet = theme.emojiSet || ["📰", "🔥", "✨", "📢"];
+  const emoji = emojiSet[index % emojiSet.length];
 
   function handleClick() {
     setRipple(true);
@@ -42,27 +37,51 @@ export default function NewsCard({
   return (
     <div
       style={{
-        ...styles.card,
+        position: "relative",
+        borderRadius: 20,
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        transition: "all 0.25s ease",
         background: theme.colors.cardBg,
 
-        opacity: isRead ? 0.45 : mounted ? 1 : 0,
-        filter: isRead ? "grayscale(1)" : "none",
+        // 既読優先制御
+        opacity: isRead ? 0.35 : mounted ? 1 : 0,
+        filter: isRead
+          ? "grayscale(1) brightness(0.8)"
+          : "none",
 
-        transform: mounted
+        transform: isRead
+          ? "scale(0.98)"
+          : mounted
           ? hover
             ? "translateY(-4px)"
             : "translateY(0)"
           : "translateY(10px)",
+
+        boxShadow: hover
+          ? "0 12px 28px rgba(0,0,0,0.35)"
+          : "0 4px 14px rgba(0,0,0,0.25)",
       }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      {/* status */}
+      {/* =========================
+          状態バッジ（既読優先）
+      ========================= */}
       {isRead ? (
         <div
           style={{
-            ...styles.status,
-            background: "#666",
+            position: "absolute",
+            top: 10,
+            left: 10,
+            zIndex: 20,
+            fontSize: 11,
+            fontWeight: 800,
+            padding: "4px 8px",
+            borderRadius: 999,
+            background: "#555",
+            color: "#fff",
           }}
         >
           既読
@@ -70,44 +89,110 @@ export default function NewsCard({
       ) : isNew ? (
         <div
           style={{
-            ...styles.status,
-            background: theme.colors.primary,
+            position: "absolute",
+            top: 10,
+            left: 10,
+            zIndex: 10,
+            fontSize: 11,
+            fontWeight: 700,
+            padding: "4px 8px",
+            borderRadius: 999,
+            background: "#00c896",
+            color: "#000",
+            opacity: 0.85,
           }}
         >
           NEW
         </div>
       ) : null}
 
-      {/* brand */}
+      {/* =========================
+          ブランドラベル（右上）
+      ========================= */}
       {item.brand && (
         <div
           style={{
-            ...styles.brand,
+            position: "absolute",
+            top: 10,
+            right: 10,
+            fontSize: 11,
+            fontWeight: 700,
+            padding: "4px 8px",
+            borderRadius: 999,
             background: item.brand.color,
+            color: "#fff",
           }}
         >
           {item.brand.label}
         </div>
       )}
 
-      {/* image */}
+      {/* =========================
+          画像エリア
+      ========================= */}
       <a
         href={item.link}
+        target="_blank"
+        rel="noreferrer"
         onClick={handleClick}
-        style={styles.imageBox}
+        style={{
+          height: 120,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
+          textDecoration: "none",
+        }}
       >
-        <div style={styles.emoji}>{emoji}</div>
-        {ripple && <span style={styles.ripple} />}
+        <div style={{ fontSize: 40 }}>{emoji}</div>
+
+        {ripple && (
+          <span
+            style={{
+              position: "absolute",
+              width: 120,
+              height: 120,
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.25)",
+              animation: "ripple 0.4s ease-out",
+            }}
+          />
+        )}
       </a>
 
-      {/* body */}
-      <div style={styles.body}>
-        <a href={item.link} style={styles.title}>
+      {/* =========================
+          本文
+      ========================= */}
+      <div style={{ padding: 14 }}>
+        <a
+          href={item.link}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => markAsRead(item.link)}
+          style={{
+            textDecoration: "none",
+            fontSize: 15,
+            fontWeight: 700,
+            color: isRead ? "#aaa" : "#fff",
+          }}
+        >
           {item.title}
         </a>
 
-        <div style={styles.footer}>
-          <span style={styles.date}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginTop: 10,
+          }}
+        >
+          <span
+            style={{
+              fontSize: 12,
+              opacity: 0.7,
+              color: "#fff",
+            }}
+          >
             {new Date(item.date).toLocaleDateString(
               "ja-JP"
             )}
@@ -115,7 +200,11 @@ export default function NewsCard({
 
           <button
             onClick={() => toggleFav(item)}
-            style={styles.fav}
+            style={{
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+            }}
           >
             <Heart
               size={18}
@@ -134,83 +223,3 @@ export default function NewsCard({
     </div>
   );
 }
-
-const styles = {
-  card: {
-    borderRadius: 20,
-    overflow: "hidden",
-    transition: "all 0.25s ease",
-    display: "flex",
-    flexDirection: "column",
-    position: "relative",
-  },
-
-  status: {
-    position: "absolute",
-    top: 10,
-    left: 10,
-    fontSize: 11,
-    padding: "4px 8px",
-    borderRadius: 999,
-    fontWeight: 700,
-  },
-
-  brand: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    fontSize: 11,
-    padding: "4px 8px",
-    borderRadius: 999,
-    color: "#fff",
-  },
-
-  imageBox: {
-    height: 120,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-    textDecoration: "none",
-  },
-
-  emoji: {
-    fontSize: 40,
-  },
-
-  body: {
-    padding: 14,
-  },
-
-  title: {
-    color: "#fff",
-    fontWeight: 700,
-    textDecoration: "none",
-    fontSize: 15,
-  },
-
-  footer: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginTop: 10,
-  },
-
-  date: {
-    fontSize: 12,
-    opacity: 0.7,
-  },
-
-  fav: {
-    background: "transparent",
-    border: "none",
-  },
-
-  ripple: {
-    position: "absolute",
-    width: 120,
-    height: 120,
-    borderRadius: "50%",
-    background: "rgba(255,255,255,0.25)",
-    animation: "ripple 0.4s ease-out",
-  },
-};
