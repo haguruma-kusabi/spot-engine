@@ -27,6 +27,7 @@ export default function FilterBar({
 
   return (
     <div style={styles.wrapper}>
+      {/* tabs */}
       <div style={styles.tabRow}>
         <button onClick={() => setTab("all")} style={tabBtn(tab === "all")}>
           新着
@@ -48,6 +49,7 @@ export default function FilterBar({
         </button>
       </div>
 
+      {/* search */}
       <div style={styles.searchRow}>
         <input
           value={keyword}
@@ -68,6 +70,7 @@ export default function FilterBar({
         </select>
       </div>
 
+      {/* brand */}
       <div style={styles.brandRow}>
         <div style={styles.groupBox}>
           <div style={styles.groupTitle}>コンビニ</div>
@@ -96,22 +99,23 @@ export default function FilterBar({
             </label>
           ))}
         </div>
+      </div>
 
-        <div style={styles.otherRow}>
-          <label style={styles.checkbox}>
-            <input
-              type="checkbox"
-              checked={selectedBrands.other}
-              onChange={() =>
-                setSelectedBrands((prev) => ({
-                  ...prev,
-                  other: !prev.other,
-                }))
-              }
-            />
-            その他
-          </label>
-        </div>
+      {/* other（単独行・完全分離） */}
+      <div style={styles.otherRow}>
+        <label style={styles.checkbox}>
+          <input
+            type="checkbox"
+            checked={selectedBrands.other}
+            onChange={() =>
+              setSelectedBrands((prev) => ({
+                ...prev,
+                other: !prev.other,
+              }))
+            }
+          />
+          その他
+        </label>
       </div>
     </div>
   );
@@ -171,9 +175,10 @@ const styles = {
   },
 
   otherRow: {
+    marginTop: 10,
+    paddingTop: 8,
+    borderTop: "1px solid rgba(255,255,255,0.08)",
     display: "flex",
-    alignItems: "center",
-    paddingLeft: 10,
   },
 };
 
