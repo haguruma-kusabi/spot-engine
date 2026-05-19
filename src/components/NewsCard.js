@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
+import { BRAND_MAP } from "../lib/brand";
 
 export default function NewsCard({
   item,
@@ -44,13 +45,22 @@ export default function NewsCard({
     setTimeout(() => setRipple(false), 400);
   }
 
+  // ★ブランド表示（安全版）
+  const brandInfo = (() => {
+    if (!brand) return null;
+
+    const group = BRAND_MAP[brand.group];
+    if (!group) return null;
+
+    return group.find((b) => b.value === brand.name);
+  })();
+
   return (
     <div
       style={{
         ...styles.card,
         background: theme.colors.cardBg,
 
-        // フェードイン
         opacity: mounted ? 1 : 0,
         transform: mounted
           ? hover
@@ -83,19 +93,19 @@ export default function NewsCard({
         </div>
       )}
 
-      {/* ブランド（右上） */}
-      {brand && (
+      {/* ブランド（右上・色付き＋略称） */}
+      {brandInfo && (
         <div
           style={{
             ...styles.brand,
-            background: brand.color,
+            background: brandInfo.color,
           }}
         >
-          {brand.name}
+          {brandInfo.label}
         </div>
       )}
 
-      {/* 画像エリア（ripple対象） */}
+      {/* 画像 */}
       <a
         href={item.link}
         target="_blank"
@@ -106,7 +116,6 @@ export default function NewsCard({
         <div style={styles.imageBox}>
           <div style={styles.emoji}>{emoji}</div>
 
-          {/* ripple effect */}
           {ripple && <span style={styles.ripple} />}
         </div>
       </a>
@@ -229,7 +238,6 @@ const styles = {
     padding: 0,
   },
 
-  // ripple
   ripple: {
     position: "absolute",
     width: 120,
@@ -239,7 +247,6 @@ const styles = {
     animation: "ripple 0.4s ease-out",
   },
 
-  // NEW pulse（簡易）
   pulse: {
     animation: "pulse 1.5s infinite",
   },
