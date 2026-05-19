@@ -26,28 +26,40 @@ export default function FilterBar({
   }
 
   return (
-    <div style={{ padding: "6px 12px" }}>
-      {/* 上段 */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
-        <button onClick={() => setTab("all")}>新着</button>
-        <button onClick={() => setTab("fav")}>❤️</button>
-        <button onClick={() => setShowUnreadOnly(!showUnreadOnly)}>
+    <div style={styles.wrapper}>
+      <div style={styles.tabRow}>
+        <button onClick={() => setTab("all")} style={tabBtn(tab === "all")}>
+          新着
+        </button>
+
+        <button onClick={() => setTab("fav")} style={tabBtn(tab === "fav")}>
+          ❤️
+        </button>
+
+        <button
+          onClick={() => setShowUnreadOnly(!showUnreadOnly)}
+          style={tabBtn(showUnreadOnly)}
+        >
           未読
         </button>
-        <button onClick={resetRead}>初期化</button>
+
+        <button onClick={resetRead} style={resetBtn}>
+          初期化
+        </button>
       </div>
 
-      {/* 検索 */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+      <div style={styles.searchRow}>
         <input
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           placeholder="検索"
+          style={styles.search}
         />
 
         <select
           value={range}
           onChange={(e) => setRange(Number(e.target.value))}
+          style={styles.select}
         >
           <option value={3}>3日</option>
           <option value={7}>7日</option>
@@ -56,12 +68,11 @@ export default function FilterBar({
         </select>
       </div>
 
-      {/* チェックボックス（色なし） */}
-      <div style={{ display: "flex", gap: 20 }}>
-        <div>
-          <div>コンビニ</div>
+      <div style={styles.brandRow}>
+        <div style={styles.groupBox}>
+          <div style={styles.groupTitle}>コンビニ</div>
           {BRAND_MAP.convenience.map((b) => (
-            <label key={b.value} style={{ display: "block" }}>
+            <label key={b.value} style={styles.checkbox}>
               <input
                 type="checkbox"
                 checked={selectedBrands.convenience.has(b.value)}
@@ -72,10 +83,10 @@ export default function FilterBar({
           ))}
         </div>
 
-        <div>
-          <div>カフェ</div>
+        <div style={styles.groupBox}>
+          <div style={styles.groupTitle}>カフェ</div>
           {BRAND_MAP.cafe.map((b) => (
-            <label key={b.value} style={{ display: "block" }}>
+            <label key={b.value} style={styles.checkbox}>
               <input
                 type="checkbox"
                 checked={selectedBrands.cafe.has(b.value)}
@@ -89,3 +100,75 @@ export default function FilterBar({
     </div>
   );
 }
+
+const styles = {
+  wrapper: { padding: "10px 12px" },
+
+  tabRow: {
+    display: "flex",
+    gap: 6,
+    marginBottom: 10,
+  },
+
+  searchRow: {
+    display: "flex",
+    gap: 6,
+    marginBottom: 10,
+  },
+
+  search: {
+    flex: 2,
+    padding: 9,
+    borderRadius: 12,
+    border: "none",
+  },
+
+  select: {
+    flex: 1,
+    borderRadius: 12,
+    border: "none",
+  },
+
+  brandRow: {
+    display: "flex",
+    gap: 10,
+  },
+
+  groupBox: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 14,
+    background: "rgba(255,255,255,0.04)",
+  },
+
+  groupTitle: {
+    fontSize: 11,
+    opacity: 0.7,
+    marginBottom: 6,
+  },
+
+  checkbox: {
+    display: "flex",
+    gap: 6,
+    fontSize: 12,
+    color: "#fff",
+  },
+};
+
+const tabBtn = (active) => ({
+  flex: 1,
+  padding: 10,
+  borderRadius: 12,
+  border: "none",
+  color: "#fff",
+  background: active ? "#63ffd2" : "#214851",
+});
+
+const resetBtn = {
+  flex: 1,
+  padding: 10,
+  borderRadius: 12,
+  border: "none",
+  color: "#fff",
+  background: "#4f8d84",
+};
