@@ -4,8 +4,6 @@ export default function FilterBar({
   tab,
   setTab,
 
-  favorites,
-
   keyword,
   setKeyword,
 
@@ -20,6 +18,22 @@ export default function FilterBar({
 
   resetRead,
 }) {
+  function toggle(group, value) {
+    setSelectedBrands((prev) => {
+      const updated = { ...prev };
+      const set = new Set(updated[group]);
+
+      if (set.has(value)) {
+        set.delete(value);
+      } else {
+        set.add(value);
+      }
+
+      updated[group] = set;
+      return updated;
+    });
+  }
+
   return (
     <div style={styles.wrapper}>
       {/* タブ */}
@@ -39,7 +53,9 @@ export default function FilterBar({
         </button>
 
         <button
-          onClick={() => setShowUnreadOnly(!showUnreadOnly)}
+          onClick={() =>
+            setShowUnreadOnly(!showUnreadOnly)
+          }
           style={tabBtn(showUnreadOnly, theme)}
         >
           未読
@@ -57,7 +73,9 @@ export default function FilterBar({
       <div style={styles.searchRow}>
         <input
           value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
+          onChange={(e) =>
+            setKeyword(e.target.value)
+          }
           placeholder="検索"
           style={{
             ...styles.search,
@@ -68,7 +86,9 @@ export default function FilterBar({
 
         <select
           value={range}
-          onChange={(e) => setRange(Number(e.target.value))}
+          onChange={(e) =>
+            setRange(Number(e.target.value))
+          }
           style={{
             ...styles.select,
             background: theme.colors.inputBg,
@@ -82,25 +102,41 @@ export default function FilterBar({
         </select>
       </div>
 
-      {/* ブランドフィルター（完全一致版） */}
+      {/* ★横並びチェックボックス（コンビニ・カフェ） */}
       <div style={styles.groupRow}>
-        {["コンビニ", "カフェ", "その他"].map((group) => (
-          <button
-            key={group}
-            onClick={() =>
-              setSelectedBrands((prev) => ({
-                ...prev,
-                [group.toLowerCase()]: !prev[group.toLowerCase()],
-              }))
-            }
-            style={filterBtn(
-              selectedBrands[group.toLowerCase()],
-              theme
-            )}
-          >
-            {group}
-          </button>
-        ))}
+        {/* コンビニ */}
+        <div style={styles.groupBox}>
+          <div style={styles.label}>コンビニ</div>
+
+          {["セブン", "ファミマ", "ローソン"].map((v) => (
+            <label key={v} style={styles.checkbox}>
+              <input
+                type="checkbox"
+                checked={selectedBrands.convenience.has(v)}
+                onChange={() =>
+                  toggle("convenience", v)
+                }
+              />
+              {v}
+            </label>
+          ))}
+        </div>
+
+        {/* カフェ */}
+        <div style={styles.groupBox}>
+          <div style={styles.label}>カフェ</div>
+
+          {["スタバ", "タリーズ", "ドトール"].map((v) => (
+            <label key={v} style={styles.checkbox}>
+              <input
+                type="checkbox"
+                checked={selectedBrands.cafe.has(v)}
+                onChange={() => toggle("cafe", v)}
+              />
+              {v}
+            </label>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -142,23 +178,31 @@ const styles = {
 
   groupRow: {
     display: "flex",
+    gap: 12,
+    flexWrap: "wrap",
+  },
+
+  groupBox: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 4,
+    padding: 6,
+  },
+
+  label: {
+    fontSize: 11,
+    opacity: 0.8,
+  },
+
+  checkbox: {
+    fontSize: 12,
+    display: "flex",
     gap: 6,
+    alignItems: "center",
   },
 };
 
 const tabBtn = (active, theme) => ({
-  flex: 1,
-  padding: 8,
-  borderRadius: 10,
-  border: "none",
-  color: "#fff",
-  fontSize: 12,
-  background: active
-    ? theme.colors.primary
-    : theme.colors.navInactive,
-});
-
-const filterBtn = (active, theme) => ({
   flex: 1,
   padding: 8,
   borderRadius: 10,
