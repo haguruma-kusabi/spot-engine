@@ -1,91 +1,40 @@
-export const GROUPS = {
-  コンビニ: ["セブン", "ファミマ", "ローソン"],
-  カフェ: ["スタバ", "タリーズ", "ドトール"],
-  その他: [],
+export const BRAND_MAP = {
+  convenience: [
+    { label: "セブン", value: "seven" },
+    { label: "ファミマ", value: "famima" },
+    { label: "ローソン", value: "lawson" },
+  ],
+  cafe: [
+    { label: "スタバ", value: "starbucks" },
+    { label: "タリーズ", value: "tullys" },
+    { label: "ドトール", value: "doutor" },
+  ],
 };
 
 export function detectBrand(title = "") {
-  const text = title.toLowerCase();
+  const t = title.toLowerCase();
 
-  // セブン
-  if (
-    text.includes("セブン") ||
-    text.includes("セブンイレブン") ||
-    text.includes("7-eleven") ||
-    text.includes("7-11")
-  ) {
-    return {
-      group: "コンビニ",
-      name: "セブン",
-      color: "#f36c21",
-    };
+  // コンビニ
+  if (t.includes("セブン") || t.includes("seven")) {
+    return { group: "convenience", name: "seven" };
+  }
+  if (t.includes("ファミマ") || t.includes("familymart")) {
+    return { group: "convenience", name: "famima" };
+  }
+  if (t.includes("ローソン") || t.includes("lawson")) {
+    return { group: "convenience", name: "lawson" };
   }
 
-  // ファミマ
-  if (
-    text.includes("ファミマ") ||
-    text.includes("ファミリーマート") ||
-    text.includes("familymart")
-  ) {
-    return {
-      group: "コンビニ",
-      name: "ファミマ",
-      color: "#00a652",
-    };
+  // カフェ
+  if (t.includes("スタバ") || t.includes("starbucks")) {
+    return { group: "cafe", name: "starbucks" };
+  }
+  if (t.includes("タリーズ") || t.includes("tullys")) {
+    return { group: "cafe", name: "tullys" };
+  }
+  if (t.includes("ドトール") || t.includes("doutor")) {
+    return { group: "cafe", name: "doutor" };
   }
 
-  // ローソン
-  if (
-    text.includes("ローソン") ||
-    text.includes("lawson")
-  ) {
-    return {
-      group: "コンビニ",
-      name: "ローソン",
-      color: "#005bac",
-    };
-  }
-
-  // スタバ
-  if (
-    text.includes("スタバ") ||
-    text.includes("スターバックス") ||
-    text.includes("starbucks")
-  ) {
-    return {
-      group: "カフェ",
-      name: "スタバ",
-      color: "#00704a",
-    };
-  }
-
-  // タリーズ
-  if (
-    text.includes("タリーズ") ||
-    text.includes("tullys")
-  ) {
-    return {
-      group: "カフェ",
-      name: "タリーズ",
-      color: "#000000",
-    };
-  }
-
-  // ドトール
-  if (
-    text.includes("ドトール") ||
-    text.includes("doutor")
-  ) {
-    return {
-      group: "カフェ",
-      name: "ドトール",
-      color: "#f2c200",
-    };
-  }
-
-  return {
-    group: "その他",
-    name: "その他",
-    color: "#8b3a2f",
-  };
+  return null;
 }
