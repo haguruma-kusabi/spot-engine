@@ -9,6 +9,7 @@ import {
 import Header from "./components/Header";
 import FilterBar from "./components/FilterBar";
 import NewsCard from "./components/NewsCard";
+import SkeletonCard from "./components/SkeletonCard";
 
 import { detectBrand } from "./lib/detectBrand";
 
@@ -422,6 +423,10 @@ export default function HomePage({
         color: "#fff",
       }}
     >
+      {/* =========================
+          Header
+      ========================= */}
+
       <div
         style={{
           position: "sticky",
@@ -467,33 +472,60 @@ export default function HomePage({
         />
       </div>
 
+      {/* =========================
+          News Grid
+      ========================= */}
+
       <div
         style={{
           padding:
             "12px 14px 120px",
+
           display: "grid",
+
           gridTemplateColumns:
             "repeat(auto-fill,minmax(220px,1fr))",
+
           gap: 16,
         }}
       >
-        {filteredItems.map(
-          (item, i) => (
-            <NewsCard
-              key={item.link || i}
-              item={item}
-              favorites={favorites}
-              readItems={readItems}
-              toggleFav={toggleFav}
-              markAsRead={
-                markAsRead
-              }
-              theme={theme}
-              index={i}
-            />
-          )
-        )}
+        {loading
+          ? Array.from({
+              length: 8,
+            }).map((_, i) => (
+              <SkeletonCard
+                key={i}
+              />
+            ))
+          : filteredItems.map(
+              (item, i) => (
+                <NewsCard
+                  key={
+                    item.link || i
+                  }
+                  item={item}
+                  favorites={
+                    favorites
+                  }
+                  readItems={
+                    readItems
+                  }
+                  toggleFav={
+                    toggleFav
+                  }
+                  markAsRead={
+                    markAsRead
+                  }
+                  theme={theme}
+                  index={i}
+                />
+              )
+            )}
       </div>
+
+      {/* =========================
+          下余白
+      ========================= */}
 
       <div
         style={{
