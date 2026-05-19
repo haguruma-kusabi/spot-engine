@@ -87,15 +87,12 @@ export default function HomePage({ theme }) {
         const b = item.brand;
         if (!b) return false;
 
-        const inConv =
-          b.group === "convenience" &&
-          selectedBrands.convenience.has(b.name);
-
-        const inCafe =
-          b.group === "cafe" &&
-          selectedBrands.cafe.has(b.name);
-
-        return inConv || inCafe;
+        return (
+          (b.group === "convenience" &&
+            selectedBrands.convenience.has(b.name)) ||
+          (b.group === "cafe" &&
+            selectedBrands.cafe.has(b.name))
+        );
       });
     }
 
