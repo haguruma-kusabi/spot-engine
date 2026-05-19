@@ -1,61 +1,75 @@
-import { BRAND_MAP } from "../lib/brand";
+import { useMemo } from "react";
 
 export default function FilterBar({
   tab,
   setTab,
-  keyword,
-  setKeyword,
   range,
   setRange,
-  selectedBrands,
-  setSelectedBrands,
+  keyword,
+  setKeyword,
   showUnreadOnly,
   setShowUnreadOnly,
   resetRead,
+  selectedBrands,
+  setSelectedBrands,
+  theme,
 }) {
-  function toggle(group, value) {
+  const toggleBrand = (group, name) => {
     setSelectedBrands((prev) => {
-      const next = { ...prev };
-      const set = new Set(next[group]);
+      const copy = {
+        ...prev,
+        convenience: new Set(prev.convenience),
+        cafe: new Set(prev.cafe),
+      };
 
-      set.has(value) ? set.delete(value) : set.add(value);
+      if (group === "other") {
+        copy.other = !prev.other;
+        return copy;
+      }
 
-      next[group] = set;
-      return next;
+      const set = copy[group];
+
+      if (set.has(name)) {
+        set.delete(name);
+      } else {
+        set.add(name);
+      }
+
+      return copy;
     });
-  }
+  };
 
   return (
     <div style={styles.wrapper}>
-      {/* tabs */}
-      <div style={styles.tabRow}>
-        <button onClick={() => setTab("all")} style={tabBtn(tab === "all")}>
+      {/* 上段タブ */}
+      <div style={styles.row}>
+        <button onClick={() => setTab("all")} style={styles.btn}>
           新着
         </button>
 
-        <button onClick={() => setTab("fav")} style={tabBtn(tab === "fav")}>
+        <button onClick={() => setTab("fav")} style={styles.btn}>
           ❤️
         </button>
 
         <button
           onClick={() => setShowUnreadOnly(!showUnreadOnly)}
-          style={tabBtn(showUnreadOnly)}
+          style={styles.btn}
         >
           未読
         </button>
 
-        <button onClick={resetRead} style={resetBtn}>
+        <button onClick={resetRead} style={styles.btn}>
           初期化
         </button>
       </div>
 
-      {/* search */}
-      <div style={styles.searchRow}>
+      {/* 検索・期間 */}
+      <div style={styles.row}>
         <input
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           placeholder="検索"
-          style={styles.search}
+          style={styles.input}
         />
 
         <select
@@ -70,132 +84,90 @@ export default function FilterBar({
         </select>
       </div>
 
-      {/* brand */}
-      <div style={styles.brandRow}>
-        <div style={styles.groupBox}>
-          <div style={styles.groupTitle}>コンビニ</div>
-          {BRAND_MAP.convenience.map((b) => (
-            <label key={b.value} style={styles.checkbox}>
-              <input
-                type="checkbox"
-                checked={selectedBrands.convenience.has(b.value)}
-                onChange={() => toggle("convenience", b.value)}
-              />
-              {b.label}
-            </label>
-          ))}
-        </div>
-
-        <div style={styles.groupBox}>
-          <div style={styles.groupTitle}>カフェ</div>
-          {BRAND_MAP.cafe.map((b) => (
-            <label key={b.value} style={styles.checkbox}>
-              <input
-                type="checkbox"
-                checked={selectedBrands.cafe.has(b.value)}
-                onChange={() => toggle("cafe", b.value)}
-              />
-              {b.label}
-            </label>
-          ))}
-        </div>
+      {/* コンビニ */}
+      <div style={styles.groupRow}>
+        {["seven", "famima", "lawson"].map((name) => (
+          <button
+            key={name}
+            onClick={() => toggleBrand("convenience", name)}
+            style={styles.tag}
+          >
+            {name}
+          </button>
+        ))}
       </div>
 
-      {/* other（単独行・完全分離） */}
-      <div style={styles.otherRow}>
-        <label style={styles.checkbox}>
-          <input
-            type="checkbox"
-            checked={selectedBrands.other}
-            onChange={() =>
-              setSelectedBrands((prev) => ({
-                ...prev,
-                other: !prev.other,
-              }))
-            }
-          />
+      {/* カフェ */}
+      <div style={styles.groupRow}>
+        {["starbucks", "tullys", "doutor"].map((name) => (
+          <button
+            key={name}
+            onClick={() => toggleBrand("cafe", name)}
+            style={styles.tag}
+          >
+            {name}
+          </button>
+        ))}
+      </div>
+
+      {/* その他 */}
+      <div style={styles.groupRow}>
+        <button
+          onClick={() => toggleBrand("other", "other")}
+          style={styles.tag}
+        >
           その他
-        </label>
+        </button>
       </div>
     </div>
   );
 }
 
 const styles = {
-  wrapper: { padding: "10px 12px" },
+  wrapper: { padding: "6px 12px" },
 
-  tabRow: {
+  row: {
     display: "flex",
     gap: 6,
-    marginBottom: 10,
+    marginBottom: 8,
   },
 
-  searchRow: {
-    display: "flex",
-    gap: 6,
-    marginBottom: 10,
+  btn: {
+    flex: 1,
+    padding: 8,
+    borderRadius: 10,
+    border: "none",
+    background: "#333",
+    color: "#fff",
+    fontSize: 12,
   },
 
-  search: {
+  input: {
     flex: 2,
-    padding: 9,
-    borderRadius: 12,
+    padding: 8,
+    borderRadius: 10,
     border: "none",
   },
 
   select: {
     flex: 1,
-    borderRadius: 12,
+    borderRadius: 10,
     border: "none",
   },
 
-  brandRow: {
+  groupRow: {
     display: "flex",
-    gap: 10,
-  },
-
-  groupBox: {
-    flex: 1,
-    padding: 10,
-    borderRadius: 14,
-    background: "rgba(255,255,255,0.04)",
-  },
-
-  groupTitle: {
-    fontSize: 11,
-    opacity: 0.7,
+    gap: 6,
+    flexWrap: "wrap",
     marginBottom: 6,
   },
 
-  checkbox: {
-    display: "flex",
-    gap: 6,
-    fontSize: 12,
+  tag: {
+    padding: "6px 10px",
+    borderRadius: 999,
+    border: "none",
+    background: "#444",
     color: "#fff",
+    fontSize: 12,
   },
-
-  otherRow: {
-    marginTop: 10,
-    paddingTop: 8,
-    borderTop: "1px solid rgba(255,255,255,0.08)",
-    display: "flex",
-  },
-};
-
-const tabBtn = (active) => ({
-  flex: 1,
-  padding: 10,
-  borderRadius: 12,
-  border: "none",
-  color: "#fff",
-  background: active ? "#63ffd2" : "#214851",
-});
-
-const resetBtn = {
-  flex: 1,
-  padding: 10,
-  borderRadius: 12,
-  border: "none",
-  color: "#fff",
-  background: "#4f8d84",
 };
