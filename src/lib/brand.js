@@ -11,18 +11,15 @@ export const BRAND_MAP = {
   ],
 };
 
-// ★ここが重要：ブランド判定ロジック
 export function detectBrand(title = "") {
   const t = title.toLowerCase();
 
   if (t.includes("セブン") || t.includes("seven")) {
     return { group: "convenience", name: "seven" };
   }
-
   if (t.includes("ファミマ") || t.includes("familymart")) {
     return { group: "convenience", name: "famima" };
   }
-
   if (t.includes("ローソン") || t.includes("lawson")) {
     return { group: "convenience", name: "lawson" };
   }
@@ -30,11 +27,9 @@ export function detectBrand(title = "") {
   if (t.includes("スタバ") || t.includes("starbucks")) {
     return { group: "cafe", name: "starbucks" };
   }
-
   if (t.includes("タリーズ") || t.includes("tullys")) {
     return { group: "cafe", name: "tullys" };
   }
-
   if (t.includes("ドトール") || t.includes("doutor")) {
     return { group: "cafe", name: "doutor" };
   }
