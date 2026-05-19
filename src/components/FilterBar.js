@@ -1,3 +1,5 @@
+import { BRAND_MAP } from "../lib/brand";
+
 export default function FilterBar({
   theme,
 
@@ -20,8 +22,8 @@ export default function FilterBar({
 }) {
   function toggle(group, value) {
     setSelectedBrands((prev) => {
-      const updated = { ...prev };
-      const set = new Set(updated[group]);
+      const next = { ...prev };
+      const set = new Set(next[group]);
 
       if (set.has(value)) {
         set.delete(value);
@@ -29,53 +31,26 @@ export default function FilterBar({
         set.add(value);
       }
 
-      updated[group] = set;
-      return updated;
+      next[group] = set;
+      return next;
     });
   }
 
   return (
     <div style={styles.wrapper}>
-      {/* タブ */}
+      {/* 上段 */}
       <div style={styles.row}>
-        <button
-          onClick={() => setTab("all")}
-          style={tabBtn(tab === "all", theme)}
-        >
-          新着
-        </button>
-
-        <button
-          onClick={() => setTab("fav")}
-          style={tabBtn(tab === "fav", theme)}
-        >
-          ❤️
-        </button>
-
-        <button
-          onClick={() =>
-            setShowUnreadOnly(!showUnreadOnly)
-          }
-          style={tabBtn(showUnreadOnly, theme)}
-        >
-          未読
-        </button>
-
-        <button
-          onClick={resetRead}
-          style={tabBtn(false, theme)}
-        >
-          初期化
-        </button>
+        <button onClick={() => setTab("all")} style={btn(tab==="all", theme)}>新着</button>
+        <button onClick={() => setTab("fav")} style={btn(tab==="fav", theme)}>❤️</button>
+        <button onClick={() => setShowUnreadOnly(!showUnreadOnly)} style={btn(showUnreadOnly, theme)}>未読</button>
+        <button onClick={resetRead} style={btn(false, theme)}>初期化</button>
       </div>
 
-      {/* 検索 + 期間 */}
+      {/* 検索 */}
       <div style={styles.searchRow}>
         <input
           value={keyword}
-          onChange={(e) =>
-            setKeyword(e.target.value)
-          }
+          onChange={(e) => setKeyword(e.target.value)}
           placeholder="検索"
           style={{
             ...styles.search,
@@ -86,9 +61,7 @@ export default function FilterBar({
 
         <select
           value={range}
-          onChange={(e) =>
-            setRange(Number(e.target.value))
-          }
+          onChange={(e) => setRange(Number(e.target.value))}
           style={{
             ...styles.select,
             background: theme.colors.inputBg,
@@ -102,22 +75,19 @@ export default function FilterBar({
         </select>
       </div>
 
-      {/* ★横並びチェックボックス（コンビニ・カフェ） */}
+      {/* チェックボックス（横並び維持） */}
       <div style={styles.groupRow}>
         {/* コンビニ */}
         <div style={styles.groupBox}>
           <div style={styles.label}>コンビニ</div>
-
-          {["セブン", "ファミマ", "ローソン"].map((v) => (
-            <label key={v} style={styles.checkbox}>
+          {BRAND_MAP.convenience.map((b) => (
+            <label key={b.value} style={styles.checkbox}>
               <input
                 type="checkbox"
-                checked={selectedBrands.convenience.has(v)}
-                onChange={() =>
-                  toggle("convenience", v)
-                }
+                checked={selectedBrands.convenience.has(b.value)}
+                onChange={() => toggle("convenience", b.value)}
               />
-              {v}
+              {b.label}
             </label>
           ))}
         </div>
@@ -125,15 +95,14 @@ export default function FilterBar({
         {/* カフェ */}
         <div style={styles.groupBox}>
           <div style={styles.label}>カフェ</div>
-
-          {["スタバ", "タリーズ", "ドトール"].map((v) => (
-            <label key={v} style={styles.checkbox}>
+          {BRAND_MAP.cafe.map((b) => (
+            <label key={b.value} style={styles.checkbox}>
               <input
                 type="checkbox"
-                checked={selectedBrands.cafe.has(v)}
-                onChange={() => toggle("cafe", v)}
+                checked={selectedBrands.cafe.has(b.value)}
+                onChange={() => toggle("cafe", b.value)}
               />
-              {v}
+              {b.label}
             </label>
           ))}
         </div>
@@ -143,21 +112,11 @@ export default function FilterBar({
 }
 
 const styles = {
-  wrapper: {
-    padding: "6px 12px",
-  },
+  wrapper: { padding: "6px 12px" },
 
-  row: {
-    display: "flex",
-    gap: 6,
-    marginBottom: 8,
-  },
+  row: { display: "flex", gap: 6, marginBottom: 8 },
 
-  searchRow: {
-    display: "flex",
-    gap: 6,
-    marginBottom: 8,
-  },
+  searchRow: { display: "flex", gap: 6, marginBottom: 8 },
 
   search: {
     flex: 2,
@@ -179,14 +138,12 @@ const styles = {
   groupRow: {
     display: "flex",
     gap: 12,
-    flexWrap: "wrap",
   },
 
   groupBox: {
     display: "flex",
     flexDirection: "column",
     gap: 4,
-    padding: 6,
   },
 
   label: {
@@ -195,14 +152,14 @@ const styles = {
   },
 
   checkbox: {
-    fontSize: 12,
     display: "flex",
     gap: 6,
+    fontSize: 12,
     alignItems: "center",
   },
 };
 
-const tabBtn = (active, theme) => ({
+const btn = (active, theme) => ({
   flex: 1,
   padding: 8,
   borderRadius: 10,
