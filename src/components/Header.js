@@ -1,5 +1,4 @@
 import { useState } from "react";
-import SeriesNav from "./SeriesNav";
 import { themes } from "../themes";
 
 export default function Header({
@@ -14,7 +13,7 @@ export default function Header({
     <div style={styles.wrapper}>
       {/* 上段 */}
       <div style={styles.topRow}>
-        {/* ≡ メニュー（維持） */}
+        {/* ハンバーガー（サイト遷移） */}
         <div style={styles.menuArea}>
           <button
             onClick={() => setOpen(!open)}
@@ -46,13 +45,9 @@ export default function Header({
         <div style={{ width: 40 }} />
       </div>
 
-      {/* SeriesNav（維持） */}
-      <SeriesNav
-        currentTheme={theme.id}
-        primary={theme.colors.primary}
-      />
+      {/* SeriesNav → 完全削除 */}
 
-      {/* 情報（維持） */}
+      {/* 情報 */}
       <div style={styles.infoRow}>
         <span>{filteredCount}件ヒット</span>
         <span>今日 {todayCount}件</span>
