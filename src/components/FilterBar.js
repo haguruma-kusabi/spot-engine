@@ -75,9 +75,8 @@ export default function FilterBar({
         </select>
       </div>
 
-      {/* チェックボックス（横並び維持） */}
+      {/* チェックボックス */}
       <div style={styles.groupRow}>
-        {/* コンビニ */}
         <div style={styles.groupBox}>
           <div style={styles.label}>コンビニ</div>
           {BRAND_MAP.convenience.map((b) => (
@@ -87,12 +86,13 @@ export default function FilterBar({
                 checked={selectedBrands.convenience.has(b.value)}
                 onChange={() => toggle("convenience", b.value)}
               />
-              {b.label}
+              <span style={{ color: b.color }}>
+                {b.label}
+              </span>
             </label>
           ))}
         </div>
 
-        {/* カフェ */}
         <div style={styles.groupBox}>
           <div style={styles.label}>カフェ</div>
           {BRAND_MAP.cafe.map((b) => (
@@ -102,7 +102,9 @@ export default function FilterBar({
                 checked={selectedBrands.cafe.has(b.value)}
                 onChange={() => toggle("cafe", b.value)}
               />
-              {b.label}
+              <span style={{ color: b.color }}>
+                {b.label}
+              </span>
             </label>
           ))}
         </div>
