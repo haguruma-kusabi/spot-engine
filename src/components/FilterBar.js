@@ -44,6 +44,10 @@ export default function FilterBar({
       (b) => b.group === "cafe"
     );
 
+  // =========================
+  // ブランド切替
+  // =========================
+
   function toggleBrand(
     group,
     name
@@ -65,6 +69,10 @@ export default function FilterBar({
       };
     });
   }
+
+  // =========================
+  // 全選択
+  // =========================
 
   function toggleAll(group) {
     const list =
@@ -94,52 +102,10 @@ export default function FilterBar({
 
   return (
     <div style={styles.wrapper}>
-      {/* 上段 */}
-      <div style={styles.topRow}>
-        <button
-          onClick={() =>
-            setTab("all")
-          }
-          style={tabBtn(
-            tab === "all"
-          )}
-        >
-          新着
-        </button>
+      {/* =========================
+          検索 + 期間
+      ========================= */}
 
-        <button
-          onClick={() =>
-            setTab("fav")
-          }
-          style={tabBtn(
-            tab === "fav"
-          )}
-        >
-          お気に入り
-        </button>
-
-        <button
-          onClick={() =>
-            setShowUnreadOnly(
-              !showUnreadOnly
-            )
-          }
-          style={tabBtn(
-            showUnreadOnly
-          )}
-        >
-          未読
-        </button>
-
-        <button
-          onClick={resetRead}
-          style={tabBtn(false)}
-        >
-          既読リセット
-        </button>
-      </div>
-
-      {/* 検索 */}
       <div style={styles.searchRow}>
         <input
           value={keyword}
@@ -181,7 +147,58 @@ export default function FilterBar({
         </select>
       </div>
 
-      {/* ブランド */}
+      {/* =========================
+          タブ
+      ========================= */}
+
+      <div style={styles.topRow}>
+        <button
+          onClick={() =>
+            setTab("all")
+          }
+          style={tabBtn(
+            tab === "all"
+          )}
+        >
+          新着
+        </button>
+
+        <button
+          onClick={() =>
+            setTab("fav")
+          }
+          style={tabBtn(
+            tab === "fav"
+          )}
+        >
+          ♥
+        </button>
+
+        <button
+          onClick={() =>
+            setShowUnreadOnly(
+              !showUnreadOnly
+            )
+          }
+          style={tabBtn(
+            showUnreadOnly
+          )}
+        >
+          未読
+        </button>
+
+        <button
+          onClick={resetRead}
+          style={tabBtn(false)}
+        >
+          初期化
+        </button>
+      </div>
+
+      {/* =========================
+          ブランド
+      ========================= */}
+
       <div style={styles.brandRow}>
         {/* コンビニ */}
         <div style={styles.groupBox}>
@@ -336,7 +353,10 @@ export default function FilterBar({
         </div>
       </div>
 
-      {/* その他 */}
+      {/* =========================
+          その他
+      ========================= */}
+
       <div style={styles.otherRow}>
         <label
           style={styles.otherCheck}
@@ -369,17 +389,14 @@ const styles = {
     padding: "10px 12px",
   },
 
-  topRow: {
-    display: "flex",
-    gap: 8,
-    marginBottom: 10,
-    flexWrap: "wrap",
-  },
+  // =========================
+  // 検索
+  // =========================
 
   searchRow: {
     display: "flex",
     gap: 8,
-    marginBottom: 12,
+    marginBottom: 10,
   },
 
   search: {
@@ -401,7 +418,24 @@ const styles = {
       "10px 12px",
     background: "#1e1e1e",
     color: "#fff",
+    minWidth: 90,
   },
+
+  // =========================
+  // タブ
+  // =========================
+
+  topRow: {
+    display: "grid",
+    gridTemplateColumns:
+      "1fr 0.8fr 1fr 1fr",
+    gap: 8,
+    marginBottom: 12,
+  },
+
+  // =========================
+  // ブランド
+  // =========================
 
   brandRow: {
     display: "flex",
@@ -446,6 +480,10 @@ const styles = {
     fontSize: 14,
   },
 
+  // =========================
+  // その他
+  // =========================
+
   otherRow: {
     marginTop: 8,
   },
@@ -463,11 +501,12 @@ const tabBtn = (active) => ({
   border: "none",
   borderRadius: 12,
   padding:
-    "10px 12px",
+    "10px 8px",
   background: active
     ? "#4d7cff"
     : "#2b2b2b",
   color: "#fff",
   cursor: "pointer",
   fontWeight: 700,
+  fontSize: 13,
 });
