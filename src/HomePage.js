@@ -7,7 +7,6 @@ import { detectBrand } from "./lib/brand";
 
 export default function HomePage({ theme }) {
   const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const [tab, setTab] = useState("all");
   const [keyword, setKeyword] = useState("");
@@ -28,21 +27,15 @@ export default function HomePage({ theme }) {
   }, []);
 
   async function fetchNews() {
-    try {
-      setLoading(true);
+    const res = await fetch(`/api/news?theme=${theme.id}`);
+    const data = await res.json();
 
-      const res = await fetch(`/api/news?theme=${theme.id}`);
-      const data = await res.json();
-
-      const enriched = (data || []).map((item) => ({
+    setItems(
+      (data || []).map((item) => ({
         ...item,
         brand: detectBrand(item.title),
-      }));
-
-      setItems(enriched);
-    } finally {
-      setLoading(false);
-    }
+      }))
+    );
   }
 
   function toggleFav(item) {
@@ -67,7 +60,7 @@ export default function HomePage({ theme }) {
   const filteredItems = useMemo(() => {
     let list = [...items];
 
-    if (tab === "favorites") list = favorites;
+    if (tab === "fav") list = favorites;
 
     if (keyword.trim()) {
       const k = keyword.toLowerCase();
@@ -95,11 +88,11 @@ export default function HomePage({ theme }) {
     }
 
     const now = new Date();
+
     list = list.filter((item) => {
       const diff =
         (now - new Date(item.date)) /
         (1000 * 60 * 60 * 24);
-
       return diff <= range;
     });
 
@@ -109,12 +102,10 @@ export default function HomePage({ theme }) {
       );
     }
 
-    list.sort(
+    return list.sort(
       (a, b) =>
         new Date(b.date) - new Date(a.date)
     );
-
-    return list;
   }, [
     items,
     favorites,
