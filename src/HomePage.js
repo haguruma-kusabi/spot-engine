@@ -78,6 +78,7 @@ export default function HomePage({ theme }) {
     if (hasFilter) {
       list = list.filter((item) => {
         const b = item.brand;
+
         if (!b && selectedBrands.other) return true;
         if (!b) return false;
 
@@ -173,7 +174,6 @@ export default function HomePage({ theme }) {
           resetRead={resetRead}
           selectedBrands={selectedBrands}
           setSelectedBrands={setSelectedBrands}
-          theme={theme}
         />
       </div>
 
