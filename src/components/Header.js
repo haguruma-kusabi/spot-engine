@@ -14,7 +14,7 @@ export default function Header({
     <div style={styles.wrapper}>
       {/* 上段 */}
       <div style={styles.topRow}>
-        {/* ≡ メニュー */}
+        {/* ≡ メニュー（維持） */}
         <div style={styles.menuArea}>
           <button
             onClick={() => setOpen(!open)}
@@ -38,22 +38,21 @@ export default function Header({
           )}
         </div>
 
-        {/* タイトル（中央固定） */}
+        {/* タイトル */}
         <div style={styles.title}>
           {theme.title}
         </div>
 
-        {/* 右側余白（バランス用） */}
         <div style={{ width: 40 }} />
       </div>
 
-      {/* SeriesNav（残す） */}
+      {/* SeriesNav（維持） */}
       <SeriesNav
         currentTheme={theme.id}
         primary={theme.colors.primary}
       />
 
-      {/* 情報 */}
+      {/* 情報（維持） */}
       <div style={styles.infoRow}>
         <span>{filteredCount}件ヒット</span>
         <span>今日 {todayCount}件</span>
