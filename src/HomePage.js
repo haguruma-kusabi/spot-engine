@@ -10,7 +10,6 @@ export default function HomePage({ theme }) {
   const [loading, setLoading] = useState(true);
 
   const [tab, setTab] = useState("all");
-
   const [range, setRange] = useState(7);
   const [keyword, setKeyword] = useState("");
 
@@ -19,11 +18,10 @@ export default function HomePage({ theme }) {
   const [favorites, setFavorites] = useState([]);
   const [readItems, setReadItems] = useState([]);
 
-  // ★重要：Setで管理（ここが今回の修正本体）
+  // ★安全チェックボックス状態（Set統一）
   const [selectedBrands, setSelectedBrands] = useState({
     convenience: new Set(),
     cafe: new Set(),
-    other: false,
   });
 
   useEffect(() => {
@@ -70,12 +68,10 @@ export default function HomePage({ theme }) {
   const filteredItems = useMemo(() => {
     let list = [...items];
 
-    // tab
     if (tab === "favorites") {
       list = favorites;
     }
 
-    // keyword
     if (keyword.trim()) {
       const k = keyword.toLowerCase();
       list = list.filter((i) =>
@@ -83,41 +79,30 @@ export default function HomePage({ theme }) {
       );
     }
 
-    // ★ブランドフィルター（完全一致版）
+    // ★ブランドフィルター（完全安全）
     const hasFilter =
       selectedBrands.convenience.size > 0 ||
-      selectedBrands.cafe.size > 0 ||
-      selectedBrands.other;
+      selectedBrands.cafe.size > 0;
 
     if (hasFilter) {
       list = list.filter((item) => {
         const b = item.brand;
-
         if (!b) return false;
-
-        if (selectedBrands.other && b.group === "other") {
-          return true;
-        }
 
         if (
           b.group === "convenience" &&
           selectedBrands.convenience.has(b.name)
-        ) {
-          return true;
-        }
+        ) return true;
 
         if (
           b.group === "cafe" &&
           selectedBrands.cafe.has(b.name)
-        ) {
-          return true;
-        }
+        ) return true;
 
         return false;
       });
     }
 
-    // range
     const now = new Date();
     list = list.filter((item) => {
       const diff =
@@ -127,14 +112,12 @@ export default function HomePage({ theme }) {
       return diff <= range;
     });
 
-    // unread
     if (showUnreadOnly) {
       list = list.filter(
         (i) => !readItems.includes(i.link)
       );
     }
 
-    // sort
     list.sort(
       (a, b) =>
         new Date(b.date) - new Date(a.date)
@@ -209,7 +192,6 @@ export default function HomePage({ theme }) {
         ))}
       </div>
 
-      {/* 下部余白固定 */}
       <div
         style={{
           position: "fixed",
