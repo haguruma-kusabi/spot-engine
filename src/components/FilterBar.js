@@ -96,6 +96,22 @@ export default function FilterBar({
             </label>
           ))}
         </div>
+
+        <div style={styles.otherRow}>
+          <label style={styles.checkbox}>
+            <input
+              type="checkbox"
+              checked={selectedBrands.other}
+              onChange={() =>
+                setSelectedBrands((prev) => ({
+                  ...prev,
+                  other: !prev.other,
+                }))
+              }
+            />
+            その他
+          </label>
+        </div>
       </div>
     </div>
   );
@@ -152,6 +168,12 @@ const styles = {
     gap: 6,
     fontSize: 12,
     color: "#fff",
+  },
+
+  otherRow: {
+    display: "flex",
+    alignItems: "center",
+    paddingLeft: 10,
   },
 };
 
