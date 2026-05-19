@@ -3,13 +3,14 @@ import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header";
 import FilterBar from "./components/FilterBar";
 import NewsCard from "./components/NewsCard";
-import { detectBrand } from "./lib/detectBrand";
+import { detectBrand } from "./lib/brand";
 
 export default function HomePage({ theme }) {
   const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [tab, setTab] = useState("all");
+
   const [range, setRange] = useState(7);
   const [keyword, setKeyword] = useState("");
 
@@ -18,12 +19,9 @@ export default function HomePage({ theme }) {
   const [favorites, setFavorites] = useState([]);
   const [readItems, setReadItems] = useState([]);
 
-  const [filterOpen, setFilterOpen] = useState(true);
-
   const [selectedBrands, setSelectedBrands] = useState({
     convenience: new Set(),
     cafe: new Set(),
-    other: false,
   });
 
   useEffect(() => {
@@ -33,7 +31,10 @@ export default function HomePage({ theme }) {
   async function fetchNews() {
     try {
       setLoading(true);
-      const res = await fetch(`/api/news?theme=${theme.id}`);
+
+      const res = await fetch(
+        `/api/news?theme=${theme.id}`
+      );
       const data = await res.json();
 
       const enriched = (data || []).map((item) => ({
@@ -69,49 +70,44 @@ export default function HomePage({ theme }) {
   const filteredItems = useMemo(() => {
     let list = [...items];
 
-    if (tab === "favorites") {
-      list = favorites;
-    }
+    // tab
+    if (tab === "fav") list = favorites;
 
+    // keyword
     if (keyword.trim()) {
       const k = keyword.toLowerCase();
       list = list.filter((i) =>
-        (i.title || "").toLowerCase().includes(k)
+        i.title.toLowerCase().includes(k)
       );
     }
 
+    // brand filter
     const hasFilter =
       selectedBrands.convenience.size > 0 ||
-      selectedBrands.cafe.size > 0 ||
-      selectedBrands.other;
+      selectedBrands.cafe.size > 0;
 
     if (hasFilter) {
       list = list.filter((item) => {
         const b = item.brand;
         if (!b) return false;
 
-        if (selectedBrands.other && b.group === "other") {
-          return true;
-        }
-
         if (
           b.group === "convenience" &&
           selectedBrands.convenience.has(b.name)
-        ) {
+        )
           return true;
-        }
 
         if (
           b.group === "cafe" &&
           selectedBrands.cafe.has(b.name)
-        ) {
+        )
           return true;
-        }
 
         return false;
       });
     }
 
+    // range
     const now = new Date();
     list = list.filter((item) => {
       const diff =
@@ -120,25 +116,25 @@ export default function HomePage({ theme }) {
       return diff <= range;
     });
 
+    // unread
     if (showUnreadOnly) {
       list = list.filter(
         (i) => !readItems.includes(i.link)
       );
     }
 
-    list.sort(
+    // sort
+    return list.sort(
       (a, b) =>
         new Date(b.date) - new Date(a.date)
     );
-
-    return list;
   }, [
     items,
-    favorites,
     tab,
     keyword,
     range,
     showUnreadOnly,
+    favorites,
     readItems,
     selectedBrands,
   ]);
@@ -151,45 +147,26 @@ export default function HomePage({ theme }) {
         color: "#fff",
       }}
     >
-      <div
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 100,
-          background: theme.colors.stickyBg,
-        }}
-      >
-        <Header
-          theme={theme}
-          filteredCount={filteredItems.length}
-          todayCount={
-            filteredItems.filter((i) => {
-              const diff =
-                (new Date() - new Date(i.date)) /
-                (1000 * 60 * 60 * 24);
-              return diff <= 1;
-            }).length
-          }
-          lastUpdated={new Date().toLocaleString("ja-JP")}
-        />
+      <Header
+        theme={theme}
+        filteredCount={filteredItems.length}
+        todayCount={0}
+        lastUpdated={new Date().toLocaleString()}
+      />
 
-        <FilterBar
-          tab={tab}
-          setTab={setTab}
-          range={range}
-          setRange={setRange}
-          keyword={keyword}
-          setKeyword={setKeyword}
-          showUnreadOnly={showUnreadOnly}
-          setShowUnreadOnly={setShowUnreadOnly}
-          resetRead={resetRead}
-          selectedBrands={selectedBrands}
-          setSelectedBrands={setSelectedBrands}
-          filterOpen={filterOpen}
-          setFilterOpen={setFilterOpen}
-          theme={theme}
-        />
-      </div>
+      <FilterBar
+        tab={tab}
+        setTab={setTab}
+        range={range}
+        setRange={setRange}
+        keyword={keyword}
+        setKeyword={setKeyword}
+        showUnreadOnly={showUnreadOnly}
+        setShowUnreadOnly={setShowUnreadOnly}
+        resetRead={resetRead}
+        selectedBrands={selectedBrands}
+        setSelectedBrands={setSelectedBrands}
+      />
 
       <div
         style={{
