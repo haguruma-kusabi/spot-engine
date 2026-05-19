@@ -18,6 +18,8 @@ export default function HomePage({ theme }) {
   const [favorites, setFavorites] = useState([]);
   const [readItems, setReadItems] = useState([]);
 
+  const [filterOpen, setFilterOpen] = useState(true);
+
   const [selectedBrands, setSelectedBrands] = useState({
     convenience: new Set(),
     cafe: new Set(),
@@ -31,7 +33,6 @@ export default function HomePage({ theme }) {
   async function fetchNews() {
     try {
       setLoading(true);
-
       const res = await fetch(`/api/news?theme=${theme.id}`);
       const data = await res.json();
 
@@ -68,12 +69,10 @@ export default function HomePage({ theme }) {
   const filteredItems = useMemo(() => {
     let list = [...items];
 
-    // tab
     if (tab === "favorites") {
       list = favorites;
     }
 
-    // keyword
     if (keyword.trim()) {
       const k = keyword.toLowerCase();
       list = list.filter((i) =>
@@ -81,7 +80,6 @@ export default function HomePage({ theme }) {
       );
     }
 
-    // brand filter
     const hasFilter =
       selectedBrands.convenience.size > 0 ||
       selectedBrands.cafe.size > 0 ||
@@ -114,25 +112,20 @@ export default function HomePage({ theme }) {
       });
     }
 
-    // date range
     const now = new Date();
-
     list = list.filter((item) => {
       const diff =
         (now - new Date(item.date)) /
         (1000 * 60 * 60 * 24);
-
       return diff <= range;
     });
 
-    // unread filter
     if (showUnreadOnly) {
       list = list.filter(
         (i) => !readItems.includes(i.link)
       );
     }
 
-    // sort
     list.sort(
       (a, b) =>
         new Date(b.date) - new Date(a.date)
@@ -158,7 +151,6 @@ export default function HomePage({ theme }) {
         color: "#fff",
       }}
     >
-      {/* HEADER */}
       <div
         style={{
           position: "sticky",
@@ -193,11 +185,12 @@ export default function HomePage({ theme }) {
           resetRead={resetRead}
           selectedBrands={selectedBrands}
           setSelectedBrands={setSelectedBrands}
+          filterOpen={filterOpen}
+          setFilterOpen={setFilterOpen}
           theme={theme}
         />
       </div>
 
-      {/* CARD GRID */}
       <div
         style={{
           padding: "12px 14px 120px",
@@ -220,19 +213,6 @@ export default function HomePage({ theme }) {
           />
         ))}
       </div>
-
-      {/* bottom spacer */}
-      <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          width: "100%",
-          height: 80,
-          background: theme.colors.background,
-          pointerEvents: "none",
-        }}
-      />
     </div>
   );
 }
