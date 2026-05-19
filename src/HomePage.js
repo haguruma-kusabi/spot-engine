@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header";
 import FilterBar from "./components/FilterBar";
 import NewsCard from "./components/NewsCard";
-import { detectBrand } from "./lib/brand";
+import { detectBrand } from "../lib/brand";
 
 export default function HomePage({ theme }) {
   const [items, setItems] = useState([]);
