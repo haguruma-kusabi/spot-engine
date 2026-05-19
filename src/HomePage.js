@@ -3,14 +3,15 @@ import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header";
 import FilterBar from "./components/FilterBar";
 import NewsCard from "./components/NewsCard";
-import { detectBrand } from "./lib/brand";
+import { detectBrand } from "./lib/detectBrand";
 
 export default function HomePage({ theme }) {
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [tab, setTab] = useState("all");
-  const [keyword, setKeyword] = useState("");
   const [range, setRange] = useState(7);
+  const [keyword, setKeyword] = useState("");
 
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
 
@@ -28,15 +29,21 @@ export default function HomePage({ theme }) {
   }, []);
 
   async function fetchNews() {
-    const res = await fetch(`/api/news?theme=${theme.id}`);
-    const data = await res.json();
+    try {
+      setLoading(true);
 
-    setItems(
-      (data || []).map((item) => ({
+      const res = await fetch(`/api/news?theme=${theme.id}`);
+      const data = await res.json();
+
+      const enriched = (data || []).map((item) => ({
         ...item,
         brand: detectBrand(item.title),
-      }))
-    );
+      }));
+
+      setItems(enriched);
+    } finally {
+      setLoading(false);
+    }
   }
 
   function toggleFav(item) {
@@ -61,8 +68,12 @@ export default function HomePage({ theme }) {
   const filteredItems = useMemo(() => {
     let list = [...items];
 
-    if (tab === "fav") list = favorites;
+    // tab
+    if (tab === "favorites") {
+      list = favorites;
+    }
 
+    // keyword
     if (keyword.trim()) {
       const k = keyword.toLowerCase();
       list = list.filter((i) =>
@@ -70,6 +81,7 @@ export default function HomePage({ theme }) {
       );
     }
 
+    // brand filter
     const hasFilter =
       selectedBrands.convenience.size > 0 ||
       selectedBrands.cafe.size > 0 ||
@@ -78,26 +90,31 @@ export default function HomePage({ theme }) {
     if (hasFilter) {
       list = list.filter((item) => {
         const b = item.brand;
-
-        if (!b && selectedBrands.other) return true;
         if (!b) return false;
 
-        if (selectedBrands.other) {
-          if (
-            b.group !== "convenience" &&
-            b.group !== "cafe"
-          ) return true;
+        if (selectedBrands.other && b.group === "other") {
+          return true;
         }
 
-        return (
-          (b.group === "convenience" &&
-            selectedBrands.convenience.has(b.name)) ||
-          (b.group === "cafe" &&
-            selectedBrands.cafe.has(b.name))
-        );
+        if (
+          b.group === "convenience" &&
+          selectedBrands.convenience.has(b.name)
+        ) {
+          return true;
+        }
+
+        if (
+          b.group === "cafe" &&
+          selectedBrands.cafe.has(b.name)
+        ) {
+          return true;
+        }
+
+        return false;
       });
     }
 
+    // date range
     const now = new Date();
 
     list = list.filter((item) => {
@@ -108,16 +125,20 @@ export default function HomePage({ theme }) {
       return diff <= range;
     });
 
+    // unread filter
     if (showUnreadOnly) {
       list = list.filter(
         (i) => !readItems.includes(i.link)
       );
     }
 
-    return list.sort(
+    // sort
+    list.sort(
       (a, b) =>
         new Date(b.date) - new Date(a.date)
     );
+
+    return list;
   }, [
     items,
     favorites,
@@ -129,61 +150,63 @@ export default function HomePage({ theme }) {
     selectedBrands,
   ]);
 
-  const todayCount = useMemo(() => {
-    const now = new Date();
-    return items.filter((item) => {
-      const diff =
-        (now - new Date(item.date)) /
-        (1000 * 60 * 60 * 24);
-      return diff <= 1;
-    }).length;
-  }, [items]);
-
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: theme.colors.background,
-      color: "#fff",
-    }}>
-      <div style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-        background: theme.colors.stickyBg,
-      }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: theme.colors.background,
+        color: "#fff",
+      }}
+    >
+      {/* HEADER */}
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+          background: theme.colors.stickyBg,
+        }}
+      >
         <Header
           theme={theme}
           filteredCount={filteredItems.length}
-          todayCount={todayCount}
-          lastUpdated={
-            items[0]?.date
-              ? new Date(items[0].date).toLocaleString("ja-JP")
-              : "-"
+          todayCount={
+            filteredItems.filter((i) => {
+              const diff =
+                (new Date() - new Date(i.date)) /
+                (1000 * 60 * 60 * 24);
+              return diff <= 1;
+            }).length
           }
+          lastUpdated={new Date().toLocaleString("ja-JP")}
         />
 
         <FilterBar
           tab={tab}
           setTab={setTab}
-          keyword={keyword}
-          setKeyword={setKeyword}
           range={range}
           setRange={setRange}
+          keyword={keyword}
+          setKeyword={setKeyword}
           showUnreadOnly={showUnreadOnly}
           setShowUnreadOnly={setShowUnreadOnly}
           resetRead={resetRead}
           selectedBrands={selectedBrands}
           setSelectedBrands={setSelectedBrands}
+          theme={theme}
         />
       </div>
 
-      <div style={{
-        padding: "12px 14px 120px",
-        display: "grid",
-        gridTemplateColumns:
-          "repeat(auto-fill,minmax(220px,1fr))",
-        gap: 16,
-      }}>
+      {/* CARD GRID */}
+      <div
+        style={{
+          padding: "12px 14px 120px",
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(auto-fill,minmax(220px,1fr))",
+          gap: 16,
+        }}
+      >
         {filteredItems.map((item, i) => (
           <NewsCard
             key={item.link || i}
@@ -198,15 +221,18 @@ export default function HomePage({ theme }) {
         ))}
       </div>
 
-      <div style={{
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        width: "100%",
-        height: 80,
-        background: theme.colors.background,
-        pointerEvents: "none",
-      }} />
+      {/* bottom spacer */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          height: 80,
+          background: theme.colors.background,
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 }
